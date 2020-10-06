@@ -2,10 +2,12 @@ package com.example.mykotlinmvvmapplication
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MainViewModel : ViewModel() {
+@Singleton
+class MainViewModel @Inject constructor(private val model: Model): ViewModel() {
 
-    private val model = Model()
     private val liveData = MutableLiveData<String>()
 
     fun onHelloButtonClick() {
