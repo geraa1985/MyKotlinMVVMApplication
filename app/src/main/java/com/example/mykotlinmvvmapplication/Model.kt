@@ -1,6 +1,6 @@
 package com.example.mykotlinmvvmapplication
 
-class Model constructor(): IModel {
+class Model : IModel {
 
     override fun getdata(): String {
         return "Hello!"

@@ -1,4 +1,4 @@
-package com.example.mykotlinmvvmapplication
+package com.example.mykotlinmvvmapplication.di
 
 import com.example.mykotlinmvvmapplication.di.components.AppGraph
 import com.example.mykotlinmvvmapplication.di.components.DaggerAppGraph
