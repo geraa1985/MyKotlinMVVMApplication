@@ -1,7 +1,9 @@
-package com.example.mykotlinmvvmapplication
+package com.example.mykotlinmvvmapplication.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mykotlinmvvmapplication.viewmodel.MainViewModel
+import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.di.DaggerGraph
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*

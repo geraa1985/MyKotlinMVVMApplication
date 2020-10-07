@@ -1,4 +1,4 @@
-package com.example.mykotlinmvvmapplication
+package com.example.mykotlinmvvmapplication.model
 
 class Model : IModel {
 

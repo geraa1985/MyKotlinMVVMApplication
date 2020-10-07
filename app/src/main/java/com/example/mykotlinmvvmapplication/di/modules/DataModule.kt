@@ -1,7 +1,7 @@
 package com.example.mykotlinmvvmapplication.di.modules
 
-import com.example.mykotlinmvvmapplication.MainViewModel
-import com.example.mykotlinmvvmapplication.Model
+import com.example.mykotlinmvvmapplication.viewmodel.MainViewModel
+import com.example.mykotlinmvvmapplication.model.Model
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
