@@ -2,9 +2,9 @@ package com.example.mykotlinmvvmapplication.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mykotlinmvvmapplication.viewmodel.MainViewModel
+import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.R
-import com.example.mykotlinmvvmapplication.di.DaggerGraph
+import com.example.mykotlinmvvmapplication.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        DaggerGraph.appGraph.inject(this)
+        MyApp.appGraph.inject(this)
 
         btn_hello.setOnClickListener {
             viewModel.onHelloButtonClick()
