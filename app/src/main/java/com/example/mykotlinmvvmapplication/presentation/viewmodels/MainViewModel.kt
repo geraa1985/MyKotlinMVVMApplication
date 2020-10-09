@@ -1,8 +1,8 @@
-package com.example.mykotlinmvvmapplication.viewmodel
+package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.model.IModel
+import com.example.mykotlinmvvmapplication.data.local.model.IModel
 
 class MainViewModel constructor(private val model: IModel) : ViewModel() {
 

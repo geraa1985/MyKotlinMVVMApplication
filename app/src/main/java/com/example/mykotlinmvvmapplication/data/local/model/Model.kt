@@ -1,4 +1,4 @@
-package com.example.mykotlinmvvmapplication.model
+package com.example.mykotlinmvvmapplication.data.local.model
 
 class Model : IModel {
 

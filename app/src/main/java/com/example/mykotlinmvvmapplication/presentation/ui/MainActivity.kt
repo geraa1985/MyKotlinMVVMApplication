@@ -1,10 +1,10 @@
-package com.example.mykotlinmvvmapplication.view
+package com.example.mykotlinmvvmapplication.presentation.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.R
-import com.example.mykotlinmvvmapplication.viewmodel.MainViewModel
+import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
