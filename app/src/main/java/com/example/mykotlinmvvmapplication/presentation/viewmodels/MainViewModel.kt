@@ -2,15 +2,20 @@ package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.data.local.model.IModel
+import com.example.mykotlinmvvmapplication.MyApp
+import com.example.mykotlinmvvmapplication.presentation.statements.NotesStatement
+import javax.inject.Inject
 
-class MainViewModel constructor(private val model: IModel) : ViewModel() {
+class MainViewModel : ViewModel() {
 
-    private val liveData = MutableLiveData<String>()
+    private val liveData = MutableLiveData<NotesStatement>()
 
-    fun onHelloButtonClick() {
-        val data = model.getdata()
-        liveData.value = data
+    @Inject
+    lateinit var notesStatement: NotesStatement
+
+    init {
+        MyApp.appGraph.inject(this)
+        liveData.value = notesStatement
     }
 
     fun getLiveData() = liveData
