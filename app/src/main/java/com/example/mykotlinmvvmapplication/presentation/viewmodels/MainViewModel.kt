@@ -3,19 +3,22 @@ package com.example.mykotlinmvvmapplication.presentation.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
-import com.example.mykotlinmvvmapplication.presentation.statements.NotesStatement
+import com.example.mykotlinmvvmapplication.data.repositoty.Repository
+import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
 
-    private val liveData = MutableLiveData<NotesStatement>()
+    private val liveData = MutableLiveData<List<EntityNote>>()
 
     @Inject
-    lateinit var notesStatement: NotesStatement
+    lateinit var noteRepository: Repository
 
     init {
         MyApp.appGraph.inject(this)
-        liveData.value = notesStatement
+        noteRepository.getNotes().observeForever {
+            liveData.value = it
+        }
     }
 
     fun getLiveData() = liveData

@@ -1,13 +1,19 @@
 package com.example.mykotlinmvvmapplication.domain.usecases
 
+import androidx.lifecycle.LiveData
 import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
-import com.example.mykotlinmvvmapplication.domain.entities.IEntities
+import com.example.mykotlinmvvmapplication.domain.irepositoty.IRepository
 
-class NotesInteractor (entityNotes: IEntities): INotesInteractor {
+class NotesInteractor (private val data: IRepository): INotesInteractor {
 
-    private val notes = entityNotes.getNotes()
+    private val notes = data.getNotes()
 
-    override fun giveNotes(): List<EntityNote> = notes
+    override fun giveNotes(): LiveData<List<EntityNote>> = notes
+
+    override fun updateNotes(entityNote: EntityNote) {
+        data.updateNotes(entityNote)
+    }
+
 
     //реализуем бизнес-логику, если она появится когда-то))
 
