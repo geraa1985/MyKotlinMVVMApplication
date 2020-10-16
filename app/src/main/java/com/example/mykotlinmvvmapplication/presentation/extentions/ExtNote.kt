@@ -1,6 +1,8 @@
-package com.example.mykotlinmvvmapplication.domain.entities
+package com.example.mykotlinmvvmapplication.presentation.extentions
 
 import com.example.mykotlinmvvmapplication.R
+import com.example.mykotlinmvvmapplication.domain.entities.Color
+import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
 
 fun EntityNote.getColor(): Int {
     return when (color) {

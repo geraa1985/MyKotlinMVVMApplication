@@ -9,7 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
-import com.example.mykotlinmvvmapplication.domain.entities.getColor
+import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import kotlinx.android.synthetic.main.item_note.view.*
 
 class NotesRVAdapter(val onClickListener: ((EntityNote) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {

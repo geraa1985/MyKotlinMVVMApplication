@@ -11,7 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
-import com.example.mykotlinmvvmapplication.domain.entities.getColor
+import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
