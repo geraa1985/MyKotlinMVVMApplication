@@ -1,9 +1,9 @@
-package com.example.mykotlinmvvmapplication.domain.irepositoty
+package com.example.mykotlinmvvmapplication.data.repositoty
 
 import androidx.lifecycle.LiveData
 import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
 
-interface IRepository {
+interface IData {
 
     fun getNotes(): LiveData<List<EntityNote>>
 

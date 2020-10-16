@@ -1,40 +1,72 @@
 package com.example.mykotlinmvvmapplication.data.local
 
-import com.example.mykotlinmvvmapplication.data.repositoty.IGetData
+import androidx.lifecycle.MutableLiveData
+import com.example.mykotlinmvvmapplication.data.repositoty.IData
+import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
+import java.util.*
 
-class DAOAnswer: IGetData{
+class DAOAnswer : IData {
 
-    override fun getNotes(): List<EntityNote> = listOf(
+    private var notesLiveData = MutableLiveData<List<EntityNote>>()
+
+    private val notes = mutableListOf(
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Первая заметка",
                     "Текст первой заметки. Короткий, но важный",
-                    0xfff06292.toInt()
+                    Color.GRAY
             ),
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Вторая заметка",
                     "Текст второй заметки. Короткий, но важный",
-                    0xff9575cd.toInt()
+                    Color.BLUE
             ),
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Третья заметка",
                     "Текст третьей заметки. Короткий, но важный",
-                    0xff64b5f6.toInt()
+                    Color.YELLOW
             ),
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Четвертая заметка",
                     "Текст четвертой заметки. Короткий, но важный",
-                    0xff4db6ac.toInt()
+                    Color.RED
             ),
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Пятая заметка",
                     "Текст пятой заметки. Короткий, но важный",
-                    0xffb2ff59.toInt()
+                    Color.GREEN
             ),
             EntityNote(
+                    UUID.randomUUID().toString(),
                     "Шестая заметка",
                     "Текст шестой заметки. Короткий, но важный",
-                    0xffffeb3b.toInt()
+                    Color.VIOLET
             )
     )
+
+    init {
+        notesLiveData.value = notes
+    }
+
+    override fun getNotes() = notesLiveData
+
+    override fun updateNotes(entityNote: EntityNote) {
+        (addOrReplace(entityNote))
+        notesLiveData.value = notes
+    }
+
+    private fun addOrReplace(entityNote: EntityNote) {
+        for (i in notes.indices) {
+            if (notes[i] == entityNote) {
+                notes[i] = entityNote
+                return
+            }
+        }
+        notes.add(entityNote)
+    }
 }

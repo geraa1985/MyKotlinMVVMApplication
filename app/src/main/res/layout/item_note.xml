@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_notes_margins">
+    android:layout_margin="@dimen/card_notes_margins"
+    app:cardElevation="20dp"
+    app:cardCornerRadius="10dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/edit_text_style"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,17 +23,18 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/text_notes_margins"
             android:layout_marginStart="@dimen/text_notes_margins"
+            android:layout_marginTop="@dimen/text_notes_margins"
             android:layout_marginEnd="@dimen/text_notes_margins"
-            tools:text="Very important note"/>
+            android:textStyle="bold"
+            tools:text="Very important note" />
 
         <TextView
             android:id="@+id/tv_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_notes_margins"
-            tools:text="My very important note text with very important information"/>
+            tools:text="My very important note text with very important information" />
 
     </LinearLayout>
 
