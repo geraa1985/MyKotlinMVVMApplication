@@ -3,45 +3,45 @@ package com.example.mykotlinmvvmapplication.data.local
 import androidx.lifecycle.MutableLiveData
 import com.example.mykotlinmvvmapplication.data.repositoty.IData
 import com.example.mykotlinmvvmapplication.domain.entities.Color
-import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
+import com.example.mykotlinmvvmapplication.domain.entities.Note
 import java.util.*
 
 class DAOAnswer : IData {
 
-    private var notesLiveData = MutableLiveData<List<EntityNote>>()
+    private var notesLiveData = MutableLiveData<List<Note>>()
 
     private val notes = mutableListOf(
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Первая заметка",
                     "Текст первой заметки. Короткий, но важный",
                     Color.GRAY
             ),
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Вторая заметка",
                     "Текст второй заметки. Короткий, но важный",
                     Color.BLUE
             ),
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Третья заметка",
                     "Текст третьей заметки. Короткий, но важный",
                     Color.YELLOW
             ),
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Четвертая заметка",
                     "Текст четвертой заметки. Короткий, но важный",
                     Color.RED
             ),
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Пятая заметка",
                     "Текст пятой заметки. Короткий, но важный",
                     Color.GREEN
             ),
-            EntityNote(
+            Note(
                     UUID.randomUUID().toString(),
                     "Шестая заметка",
                     "Текст шестой заметки. Короткий, но важный",
@@ -55,18 +55,18 @@ class DAOAnswer : IData {
 
     override fun getNotes() = notesLiveData
 
-    override fun updateNotes(entityNote: EntityNote) {
-        (addOrReplace(entityNote))
+    override fun updateNotes(note: Note) {
+        (addOrReplace(note))
         notesLiveData.value = notes
     }
 
-    private fun addOrReplace(entityNote: EntityNote) {
+    private fun addOrReplace(note: Note) {
         for (i in notes.indices) {
-            if (notes[i] == entityNote) {
-                notes[i] = entityNote
+            if (notes[i] == note) {
+                notes[i] = note
                 return
             }
         }
-        notes.add(entityNote)
+        notes.add(note)
     }
 }

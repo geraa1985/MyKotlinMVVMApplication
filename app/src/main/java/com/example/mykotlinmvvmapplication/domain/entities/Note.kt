@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class EntityNote(
+data class Note(
         val id: String,
         val title: String,
         val text: String,
@@ -16,7 +16,7 @@ data class EntityNote(
     override fun equals(other: Any?): Boolean {
         if (other === this) return true
         if (javaClass != other?.javaClass) return false
-        other as EntityNote
+        other as Note
         if (other.id != id) return false
         return true
     }

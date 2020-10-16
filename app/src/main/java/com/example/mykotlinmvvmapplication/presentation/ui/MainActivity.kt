@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         rv_notes.adapter = adapter
 
         mainViewModel.getLiveData().observe(this, { value ->
-            value?.let { adapter.entityNotes = it }
+            value?.let { adapter.notes = it }
         })
 
         fab.setOnClickListener {

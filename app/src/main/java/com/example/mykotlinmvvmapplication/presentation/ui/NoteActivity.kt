@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.R
-import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
+import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import kotlinx.android.synthetic.main.activity_note.*
@@ -24,7 +24,7 @@ class NoteActivity : AppCompatActivity() {
         private const val EXTRA_NOTE = "note"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
 
-        fun start(context: Context, note: EntityNote? = null) = Intent(context, NoteActivity::class.java).apply {
+        fun start(context: Context, note: Note? = null) = Intent(context, NoteActivity::class.java).apply {
             putExtra(EXTRA_NOTE, note)
             context.startActivity(this)
         }
@@ -33,7 +33,7 @@ class NoteActivity : AppCompatActivity() {
     @Inject
     lateinit var noteViewModel: NoteViewModel
 
-    private var note: EntityNote? = null
+    private var note: Note? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

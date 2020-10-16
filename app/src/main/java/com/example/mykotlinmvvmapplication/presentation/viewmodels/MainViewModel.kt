@@ -4,12 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.repositoty.Repository
-import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
+import com.example.mykotlinmvvmapplication.domain.entities.Note
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
 
-    private val liveData = MutableLiveData<List<EntityNote>>()
+    private val liveData = MutableLiveData<List<Note>>()
 
     @Inject
     lateinit var noteRepository: Repository

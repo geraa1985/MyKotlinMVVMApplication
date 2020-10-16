@@ -1,12 +1,12 @@
 package com.example.mykotlinmvvmapplication.domain.irepositoty
 
 import androidx.lifecycle.LiveData
-import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
+import com.example.mykotlinmvvmapplication.domain.entities.Note
 
 interface IRepository {
 
-    fun getNotes(): LiveData<List<EntityNote>>
+    fun getNotes(): LiveData<List<Note>>
 
-    fun updateNotes(entityNote: EntityNote)
+    fun updateNotes(note: Note)
 
 }
