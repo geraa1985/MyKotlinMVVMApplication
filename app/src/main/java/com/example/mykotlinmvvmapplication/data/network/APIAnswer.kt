@@ -1,73 +1,58 @@
 package com.example.mykotlinmvvmapplication.data.network
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mykotlinmvvmapplication.data.repositoty.IData
-import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
-import java.util.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 
 class APIAnswer : IData {
 
-    private var notesLiveData = MutableLiveData<List<Note>>()
-
-    private val notes = mutableListOf(
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Первая заметка",
-                    "Текст первой заметки. Короткий, но важный",
-                    Color.GRAY
-            ),
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Вторая заметка",
-                    "Текст второй заметки. Короткий, но важный",
-                    Color.BLUE
-            ),
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Третья заметка",
-                    "Текст третьей заметки. Короткий, но важный",
-                    Color.YELLOW
-            ),
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Четвертая заметка",
-                    "Текст четвертой заметки. Короткий, но важный",
-                    Color.RED
-            ),
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Пятая заметка",
-                    "Текст пятой заметки. Короткий, но важный",
-                    Color.GREEN
-            ),
-            Note(
-                    UUID.randomUUID().toString(),
-                    "Шестая заметка",
-                    "Текст шестой заметки. Короткий, но важный",
-                    Color.VIOLET
-            )
-    )
-
-    init {
-        notesLiveData.value = notes
+    companion object {
+        private const val NOTES_COLLECTION = "notes"
     }
 
-    override fun getNotes() = notesLiveData
+    private val firestore = FirebaseFirestore.getInstance()
+    private val notesReference = firestore.collection(NOTES_COLLECTION)
 
-    override fun updateNotes(note: Note) {
-        (addOrReplace(note))
-        notesLiveData.value = notes
-    }
-
-    private fun addOrReplace(note: Note) {
-        for (i in notes.indices) {
-            if (notes[i] == note) {
-                notes[i] = note
-                return
+    override fun getNotes(): LiveData<NoteResult> {
+        val result = MutableLiveData<NoteResult>()
+        notesReference.addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+            querySnapshot?.let { snapshot ->
+                val notes = snapshot.documents.map { it.toObject(Note::class.java) }
+                result.value = NoteResult.Success(notes)
+            }
+            firebaseFirestoreException?.let {
+                result.value = NoteResult.Error(it)
             }
         }
-        notes.add(note)
+        return result
     }
+
+    override fun saveNote(note: Note): LiveData<NoteResult> {
+        val result = MutableLiveData<NoteResult>()
+            notesReference.document(note.id).set(note)
+                    .addOnCompleteListener{
+                        result.value = NoteResult.Success(note)
+                    }.addOnFailureListener{
+                        result.value = NoteResult.Error(it)
+                    }
+        return result
+    }
+
+    override fun getNoteById(id: String): LiveData<NoteResult> {
+        val result = MutableLiveData<NoteResult>()
+        notesReference.document(id).get()
+                .addOnSuccessListener { snapshot ->
+                    val note = snapshot.toObject(Note::class.java)
+                    result.value = NoteResult.Success(note)
+                }.addOnFailureListener {
+                    result.value = NoteResult.Error(it)
+                }
+        return result
+    }
+
 
 }

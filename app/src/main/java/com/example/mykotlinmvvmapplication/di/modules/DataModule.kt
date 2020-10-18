@@ -1,6 +1,5 @@
 package com.example.mykotlinmvvmapplication.di.modules
 
-import com.example.mykotlinmvvmapplication.data.local.DAOAnswer
 import com.example.mykotlinmvvmapplication.data.network.APIAnswer
 import com.example.mykotlinmvvmapplication.data.repositoty.Repository
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
@@ -19,11 +18,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideDAOAnswer() = DAOAnswer()
-
-    @Provides
-    @Singleton
-    fun provideRepository(apiAnswer: APIAnswer, daoAnswer: DAOAnswer) = Repository(apiAnswer, daoAnswer)
+    fun provideRepository(apiAnswer: APIAnswer) = Repository(apiAnswer)
 
     @Provides
     @Singleton
@@ -34,7 +29,6 @@ class DataModule {
     fun provideMainViewModel() = MainViewModel()
 
     @Provides
-    @Singleton
     fun provideNoteViewModel() = NoteViewModel()
 
 }

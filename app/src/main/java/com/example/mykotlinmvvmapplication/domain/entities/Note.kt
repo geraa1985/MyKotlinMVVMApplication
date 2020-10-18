@@ -6,12 +6,12 @@ import java.util.*
 
 @Parcelize
 data class Note(
-        val id: String,
-        val title: String,
-        val text: String,
+        val id: String = "",
+        val title: String = "",
+        val text: String = "",
         val color: Color = Color.YELLOW,
         val lastChanged: Date = Date()
-) : Parcelable {
+) :  Parcelable{
 
     override fun equals(other: Any?): Boolean {
         if (other === this) return true

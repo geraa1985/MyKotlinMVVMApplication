@@ -12,7 +12,7 @@ import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import kotlinx.android.synthetic.main.item_note.view.*
 
-class NotesRVAdapter(val onClickListener: ((Note) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+class NotesRVAdapter(val onClickListener: ((id: String) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -41,7 +41,7 @@ class NotesRVAdapter(val onClickListener: ((Note) -> Unit)? = null) : RecyclerVi
             (this as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, note.getColor(), null))
 
             itemView.setOnClickListener {
-                onClickListener?.invoke(note)
+                onClickListener?.invoke(note.id)
             }
         }
     }

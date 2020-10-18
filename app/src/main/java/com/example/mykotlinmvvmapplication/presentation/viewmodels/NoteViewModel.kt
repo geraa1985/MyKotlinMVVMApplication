@@ -1,7 +1,9 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
+import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
@@ -11,6 +13,9 @@ import javax.inject.Inject
 class NoteViewModel : ViewModel() {
 
     private var pendingNote: Note? = null
+
+    private val successLiveData = MutableLiveData<Note>()
+    private val errorLiveData = MutableLiveData<Throwable>()
 
     @Inject
     lateinit var interactor: NotesInteractor
@@ -47,8 +52,23 @@ class NoteViewModel : ViewModel() {
 
     fun updateNote() {
         pendingNote?.let {
-            interactor.updateNotes(it)
+            interactor.saveNote(it)
         }
     }
+
+    fun getNoteById(id: String) {
+        interactor.giveNoteById(id).observeForever{ result ->
+            result?:return@observeForever
+            when (result) {
+                is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
+                is NoteResult.Error -> errorLiveData.value = result.error
+            }
+        }
+    }
+
+    fun getSuccessLiveData() = successLiveData
+    fun getErrorLiveData() = errorLiveData
+
+
 
 }

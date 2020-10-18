@@ -13,6 +13,7 @@ import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,11 +22,11 @@ import javax.inject.Inject
 class NoteActivity : AppCompatActivity() {
 
     companion object {
-        private const val EXTRA_NOTE = "note"
+        private const val EXTRA_NOTE_ID = "noteId"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
 
-        fun start(context: Context, note: Note? = null) = Intent(context, NoteActivity::class.java).apply {
-            putExtra(EXTRA_NOTE, note)
+        fun start(context: Context, noteId: String? = null) = Intent(context, NoteActivity::class.java).apply {
+            putExtra(EXTRA_NOTE_ID, noteId)
             context.startActivity(this)
         }
     }
@@ -34,6 +35,7 @@ class NoteActivity : AppCompatActivity() {
     lateinit var noteViewModel: NoteViewModel
 
     private var note: Note? = null
+    private var noteId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +45,28 @@ class NoteActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         MyApp.appGraph.inject(this)
-        note = intent.getParcelableExtra(EXTRA_NOTE)
 
-        setToolbar()
-        initView()
+        noteId = intent.getStringExtra(EXTRA_NOTE_ID)
+
+        noteId?.let {
+            noteViewModel.getNoteById(it)
+        } ?: run {
+            setToolbar()
+            initView()
+        }
+
+        noteViewModel.apply {
+            getSuccessLiveData().observe(this@NoteActivity, { result ->
+                note = result
+                setToolbar()
+                initView()
+            })
+            getErrorLiveData().observe(this@NoteActivity, { error ->
+                error.message?.let { errorText -> Snackbar.make(note_message, errorText, Snackbar.LENGTH_SHORT).show() }
+            })
+        }
     }
+
 
     private fun setToolbar() {
         supportActionBar?.title = note?.lastChanged?.let {
@@ -56,6 +75,8 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun initView() {
+        note_title.removeTextChangedListener(textChangeListener)
+        note_message.removeTextChangedListener(textChangeListener)
         note?.let {
             note_title.setText(it.title)
             note_message.setText(it.text)

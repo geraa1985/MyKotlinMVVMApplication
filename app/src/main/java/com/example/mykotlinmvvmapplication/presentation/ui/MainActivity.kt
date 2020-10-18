@@ -7,6 +7,7 @@ import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.adapters.NotesRVAdapter
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -27,9 +28,14 @@ class MainActivity : AppCompatActivity() {
         rv_notes.layoutManager = GridLayoutManager(this, 2)
         rv_notes.adapter = adapter
 
-        mainViewModel.getLiveData().observe(this, { value ->
-            value?.let { adapter.notes = it }
-        })
+        mainViewModel.apply {
+            getSuccessLiveData().observe(this@MainActivity, { value ->
+                value?.let { adapter.notes = value }
+            })
+            getErrorLiveData().observe(this@MainActivity, { error ->
+                error?.message?.let { errorText -> Snackbar.make(rv_notes, errorText, Snackbar.LENGTH_SHORT).show() }
+            })
+        }
 
         fab.setOnClickListener {
             NoteActivity.start(this)
