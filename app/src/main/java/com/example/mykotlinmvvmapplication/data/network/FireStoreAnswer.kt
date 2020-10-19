@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 
-class APIAnswer : IData {
+class FireStoreAnswer : IData {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"

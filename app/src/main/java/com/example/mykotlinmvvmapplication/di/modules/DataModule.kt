@@ -1,6 +1,6 @@
 package com.example.mykotlinmvvmapplication.di.modules
 
-import com.example.mykotlinmvvmapplication.data.network.APIAnswer
+import com.example.mykotlinmvvmapplication.data.network.FireStoreAnswer
 import com.example.mykotlinmvvmapplication.data.repositoty.Repository
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
 import dagger.Module
@@ -12,11 +12,11 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideAPIAnswer() = APIAnswer()
+    fun provideFSAnswer() = FireStoreAnswer()
 
     @Provides
     @Singleton
-    fun provideRepository(apiAnswer: APIAnswer) = Repository(apiAnswer)
+    fun provideRepository(fireStoreAnswer: FireStoreAnswer) = Repository(fireStoreAnswer)
 
     @Provides
     @Singleton
