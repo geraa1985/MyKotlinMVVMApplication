@@ -1,4 +1,4 @@
-package com.example.mykotlinmvvmapplication.presentation.ui.common
+package com.example.mykotlinmvvmapplication.presentation.ui.fab
 
 import android.annotation.SuppressLint
 import android.content.Context

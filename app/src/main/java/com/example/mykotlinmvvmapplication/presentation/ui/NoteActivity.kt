@@ -6,20 +6,19 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import com.example.mykotlinmvvmapplication.MyApp
+import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
+import com.example.mykotlinmvvmapplication.presentation.base.BaseActivity
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
 
-class NoteActivity : AppCompatActivity() {
+class NoteActivity : BaseActivity<Note?>() {
 
     companion object {
         private const val EXTRA_NOTE_ID = "noteId"
@@ -31,42 +30,41 @@ class NoteActivity : AppCompatActivity() {
         }
     }
 
-    @Inject
-    lateinit var noteViewModel: NoteViewModel
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProvider(this).get(NoteViewModel::class.java)
+    }
+
+    override val layoutRes: Int = R.layout.activity_note
 
     private var note: Note? = null
     private var noteId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_note)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        MyApp.appGraph.inject(this)
-
         noteId = intent.getStringExtra(EXTRA_NOTE_ID)
 
         noteId?.let {
-            noteViewModel.getNoteById(it)
+            viewModel.getNoteById(it)
         } ?: run {
             setToolbar()
             initView()
         }
 
-        noteViewModel.apply {
-            getSuccessLiveData().observe(this@NoteActivity, { result ->
-                note = result
-                setToolbar()
-                initView()
-            })
-            getErrorLiveData().observe(this@NoteActivity, { error ->
-                error.message?.let { errorText -> Snackbar.make(note_message, errorText, Snackbar.LENGTH_SHORT).show() }
-            })
-        }
     }
 
+    override fun renderError(errorText: String) {
+        Snackbar.make(note_message, errorText, Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun renderData(value: Note?) {
+        value?.let { note = value }
+        setToolbar()
+        initView()
+    }
 
     private fun setToolbar() {
         supportActionBar?.title = note?.lastChanged?.let {
@@ -92,7 +90,7 @@ class NoteActivity : AppCompatActivity() {
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-        override fun afterTextChanged(s: Editable?) = noteViewModel.save(note_title.text.toString(), note_message.text.toString(), note)
+        override fun afterTextChanged(s: Editable?) = viewModel.save(note_title.text.toString(), note_message.text.toString(), note)
 
     }
 
@@ -105,7 +103,8 @@ class NoteActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        noteViewModel.updateNote()
+        viewModel.updateNote()
         super.onBackPressed()
     }
+
 }

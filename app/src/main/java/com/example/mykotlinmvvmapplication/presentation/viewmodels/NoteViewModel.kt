@@ -1,21 +1,17 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
+import com.example.mykotlinmvvmapplication.presentation.base.BaseViewModel
 import java.util.*
 import javax.inject.Inject
 
-class NoteViewModel : ViewModel() {
+class NoteViewModel : BaseViewModel<Note?>() {
 
     private var pendingNote: Note? = null
-
-    private val successLiveData = MutableLiveData<Note>()
-    private val errorLiveData = MutableLiveData<Throwable>()
 
     @Inject
     lateinit var interactor: NotesInteractor
@@ -49,26 +45,28 @@ class NoteViewModel : ViewModel() {
         return list.first()
     }
 
-
     fun updateNote() {
         pendingNote?.let {
             interactor.saveNote(it)
         }
     }
 
-    fun getNoteById(id: String) {
-        interactor.giveNoteById(id).observeForever{ result ->
-            result?:return@observeForever
-            when (result) {
-                is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
-                is NoteResult.Error -> errorLiveData.value = result.error
-            }
+    private val observer = { result: NoteResult ->
+        when (result) {
+            is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
+            is NoteResult.Error -> errorLiveData.value = result.error
         }
     }
 
-    fun getSuccessLiveData() = successLiveData
-    fun getErrorLiveData() = errorLiveData
+    private var id: String? = null
 
+    fun getNoteById(id: String) {
+        this.id = id
+        interactor.giveNoteById(id).observeForever(observer)
+    }
 
-
+    override fun onCleared() {
+        id?.let { interactor.giveNoteById(it).removeObserver(observer) }
+        super.onCleared()
+    }
 }
