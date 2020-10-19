@@ -23,22 +23,22 @@ class APIAnswer : IData {
             querySnapshot?.let { snapshot ->
                 val notes = snapshot.documents.map { it.toObject(Note::class.java) }
                 result.value = NoteResult.Success(notes)
-            }
+            } ?: return@addSnapshotListener
             firebaseFirestoreException?.let {
                 result.value = NoteResult.Error(it)
-            }
+            } ?: return@addSnapshotListener
         }
         return result
     }
 
     override fun saveNote(note: Note): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
-            notesReference.document(note.id).set(note)
-                    .addOnCompleteListener{
-                        result.value = NoteResult.Success(note)
-                    }.addOnFailureListener{
-                        result.value = NoteResult.Error(it)
-                    }
+        notesReference.document(note.id).set(note)
+                .addOnCompleteListener {
+                    result.value = NoteResult.Success(note)
+                }.addOnFailureListener {
+                    result.value = NoteResult.Error(it)
+                }
         return result
     }
 
