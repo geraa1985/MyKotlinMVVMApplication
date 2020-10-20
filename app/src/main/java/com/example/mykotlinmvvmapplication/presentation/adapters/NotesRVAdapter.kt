@@ -34,15 +34,18 @@ class NotesRVAdapter(val onClickListener: ((id: String) -> Unit)? = null) : Recy
     override fun getItemCount() = notes.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(note: Note) = with(itemView) {
-            tv_title.text = note.title
-            tv_title.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-            tv_text.text = note.text
-            (this as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, note.getColor(), null))
+        fun bind(note: Note) = itemView.run {
+            note.run {
+                tv_title.text = title
+                tv_title.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                tv_text.text = text
+                (itemView as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, getColor(), null))
 
-            itemView.setOnClickListener {
-                onClickListener?.invoke(note.id)
+                itemView.setOnClickListener {
+                    onClickListener?.invoke(id)
+                }
             }
+
         }
     }
 
