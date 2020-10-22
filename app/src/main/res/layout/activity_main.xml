@@ -37,7 +37,7 @@
         app:layout_anchor="@id/rv_notes"
         android:backgroundTint="@color/yellow"
         app:layout_anchorGravity="bottom|end"
-        app:layout_behavior=".presentation.ui.common.FabBehavior"
+        app:layout_behavior=".presentation.ui.fab.FabBehavior"
         tools:ignore="ContentDescription" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

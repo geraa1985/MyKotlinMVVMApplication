@@ -8,13 +8,13 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykotlinmvvmapplication.R
-import com.example.mykotlinmvvmapplication.domain.entities.EntityNote
-import com.example.mykotlinmvvmapplication.domain.entities.getColor
+import com.example.mykotlinmvvmapplication.domain.entities.Note
+import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import kotlinx.android.synthetic.main.item_note.view.*
 
-class NotesRVAdapter(val onClickListener: ((EntityNote) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+class NotesRVAdapter(val onClickListener: ((id: String) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
 
-    var entityNotes: List<EntityNote> = listOf()
+    var notes: List<Note> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -29,20 +29,23 @@ class NotesRVAdapter(val onClickListener: ((EntityNote) -> Unit)? = null) : Recy
                     )
             )
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(entityNotes[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(notes[position])
 
-    override fun getItemCount() = entityNotes.size
+    override fun getItemCount() = notes.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(entityNote: EntityNote) = with(itemView) {
-            tv_title.text = entityNote.title
-            tv_title.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-            tv_text.text = entityNote.text
-            (this as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, entityNote.getColor(), null))
+        fun bind(note: Note) = itemView.run {
+            note.run {
+                tv_title.text = title
+                tv_title.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                tv_text.text = text
+                (itemView as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, getColor(), null))
 
-            itemView.setOnClickListener {
-                onClickListener?.invoke(entityNote)
+                itemView.setOnClickListener {
+                    onClickListener?.invoke(id)
+                }
             }
+
         }
     }
 
