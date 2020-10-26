@@ -13,7 +13,6 @@ import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.base.BaseActivity
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -54,10 +53,6 @@ class NoteActivity : BaseActivity<Note?>() {
             initView()
         }
 
-    }
-
-    override fun renderError(errorText: String) {
-        Snackbar.make(note_message, errorText, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun renderData(value: Note?) {

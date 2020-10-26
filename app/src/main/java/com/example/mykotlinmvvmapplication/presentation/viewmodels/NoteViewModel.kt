@@ -52,8 +52,7 @@ class NoteViewModel : BaseViewModel<Note?>() {
         }
     }
 
-    private val observer = Observer { result: NoteResult? ->
-        result?:return@Observer
+    private val observer = Observer { result: NoteResult ->
         when (result) {
             is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
             is NoteResult.Error -> errorLiveData.value = result.error
