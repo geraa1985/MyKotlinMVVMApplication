@@ -1,16 +1,21 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
-import com.example.mykotlinmvvmapplication.presentation.base.BaseViewModel
 import java.util.*
 import javax.inject.Inject
 
-class NoteViewModel : BaseViewModel<Note?>() {
+class NoteViewModel : ViewModel() {
+
+    private val successLiveData = MutableLiveData<Note?>()
+    private val errorLiveData = MutableLiveData<Throwable>()
 
     private var pendingNote: Note? = null
 
@@ -58,6 +63,9 @@ class NoteViewModel : BaseViewModel<Note?>() {
             is NoteResult.Error -> errorLiveData.value = result.error
         }
     }
+
+    fun getSuccessLiveData(): LiveData<Note?> = successLiveData
+    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
     private var id: String? = null
 

@@ -1,13 +1,18 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.network.NoAuthExceptions
 import com.example.mykotlinmvvmapplication.domain.entities.User
 import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
-import com.example.mykotlinmvvmapplication.presentation.base.BaseViewModel
 import javax.inject.Inject
 
-class SplashViewModel : BaseViewModel<Boolean?>() {
+class SplashViewModel : ViewModel() {
+
+    private val successLiveData = MutableLiveData<Boolean?>()
+    private val errorLiveData = MutableLiveData<Throwable>()
 
     @Inject
     lateinit var interactor: NotesInteractor
@@ -20,6 +25,9 @@ class SplashViewModel : BaseViewModel<Boolean?>() {
         successLiveData.value = user?.let { true }
         errorLiveData.value = NoAuthExceptions()
     }
+
+    fun getSuccessLiveData(): LiveData<Boolean?> = successLiveData
+    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
     fun requestUser() {
         interactor.giveUser().observeForever(observer)
