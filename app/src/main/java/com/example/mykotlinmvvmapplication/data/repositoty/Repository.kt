@@ -3,6 +3,7 @@ package com.example.mykotlinmvvmapplication.data.repositoty
 import androidx.lifecycle.LiveData
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Note
+import com.example.mykotlinmvvmapplication.domain.entities.User
 import com.example.mykotlinmvvmapplication.domain.irepositoty.IRepository
 
 class Repository(private val remoteData: IData) : IRepository {
@@ -16,4 +17,5 @@ class Repository(private val remoteData: IData) : IRepository {
 
     override fun getNoteById(id: String): LiveData<NoteResult> = remoteData.getNoteById(id)
 
+    override fun getUser(): LiveData<User?> = remoteData.getCurrentUser()
 }
