@@ -6,18 +6,19 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
-import com.example.mykotlinmvvmapplication.presentation.base.BaseActivity
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : BaseActivity<Note?>() {
+class NoteActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_NOTE_ID = "noteId"
@@ -29,36 +30,49 @@ class NoteActivity : BaseActivity<Note?>() {
         }
     }
 
-    override val viewModel: NoteViewModel by lazy {
+    private val viewModel: NoteViewModel by lazy {
         ViewModelProvider(this).get(NoteViewModel::class.java)
     }
-
-    override val layoutRes: Int = R.layout.activity_note
 
     private var note: Note? = null
     private var noteId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setContentView(R.layout.activity_note)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        noteId = intent.getStringExtra(EXTRA_NOTE_ID)
+        viewModel.apply {
+            getSuccessLiveData().observe(this@NoteActivity, { value ->
+                value?.let {
+                    renderData(value)
+                } ?: return@observe
+            })
+            getErrorLiveData().observe(this@NoteActivity, { error ->
+                error?.let {
+                    it.message?.let { errorText -> renderError(errorText) }
+                } ?: return@observe
+            })
+        }
 
+        noteId = intent.getStringExtra(EXTRA_NOTE_ID)
         noteId?.let {
             viewModel.getNoteById(it)
         } ?: run {
             setToolbar()
             initView()
         }
-
     }
 
-    override fun renderData(value: Note?) {
+    private fun renderData(value: Note?) {
         value?.let { note = value }
         setToolbar()
         initView()
+    }
+
+    private fun renderError(errorText: String) {
+        Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show()
     }
 
     private fun setToolbar() {
@@ -80,13 +94,9 @@ class NoteActivity : BaseActivity<Note?>() {
     }
 
     private val textChangeListener = object : TextWatcher {
-
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
         override fun afterTextChanged(s: Editable?) = viewModel.save(note_title.text.toString(), note_message.text.toString(), note)
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
