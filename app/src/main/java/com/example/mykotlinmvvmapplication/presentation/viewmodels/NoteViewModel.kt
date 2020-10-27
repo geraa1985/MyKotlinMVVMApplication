@@ -65,6 +65,7 @@ class NoteViewModel : ViewModel() {
     }
 
     fun getSuccessLiveData(): LiveData<Note?> = successLiveData
+
     fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
     private var id: String? = null

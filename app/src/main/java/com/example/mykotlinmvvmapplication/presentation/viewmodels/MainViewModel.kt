@@ -15,6 +15,9 @@ class MainViewModel : ViewModel() {
     private val successLiveData = MutableLiveData<List<Note>?>()
     private val errorLiveData = MutableLiveData<Throwable>()
 
+    @Inject
+    lateinit var interactor: NotesInteractor
+
     private val observer = Observer{ result: NoteResult? ->
         result?:return@Observer
         when (result) {
@@ -23,19 +26,17 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    @Inject
-    lateinit var interactor: NotesInteractor
-
     init {
         MyApp.appGraph.inject(this)
         interactor.giveNotes().observeForever(observer)
     }
 
+    fun getSuccessLiveData():LiveData<List<Note>?> = successLiveData
+
+    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
+
     override fun onCleared() {
         interactor.giveNotes().removeObserver(observer)
         super.onCleared()
     }
-
-    fun getSuccessLiveData():LiveData<List<Note>?> = successLiveData
-    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 }

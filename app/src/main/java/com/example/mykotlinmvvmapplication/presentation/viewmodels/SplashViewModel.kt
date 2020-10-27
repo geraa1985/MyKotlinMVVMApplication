@@ -27,6 +27,7 @@ class SplashViewModel : ViewModel() {
     }
 
     fun getSuccessLiveData(): LiveData<Boolean?> = successLiveData
+
     fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
     fun requestUser() {
