@@ -48,14 +48,26 @@ class MainActivity : AppCompatActivity() {
                     it.message?.let { errorText -> renderError(errorText) }
                 } ?: return@observe
             })
+            getClickOnFabLiveData().observe(this@MainActivity){
+                it.let { NoteActivity.start(this@MainActivity) }
+            }
+            getClickOnLogoutLiveData().observe(this@MainActivity){
+                it.let {
+                    dialogFragment.show(supportFragmentManager, "LOGOUT")
+                }
+            }
+            getClickOnNoteLiveData().observe(this@MainActivity){
+                NoteActivity.start(this@MainActivity, it)
+            }
         }
 
-        adapter = NotesRVAdapter { NoteActivity.start(this, it) }
+        adapter = NotesRVAdapter(viewModel)
+
         rv_notes.layoutManager = GridLayoutManager(this, 2)
         rv_notes.adapter = adapter
 
         fab.setOnClickListener {
-            NoteActivity.start(this)
+            viewModel.clickOnFab()
         }
     }
 
@@ -72,9 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
             when (item.itemId) {
-                R.id.logout -> dialogFragment
-                        .show(supportFragmentManager, "LOGOUT")
-                        .let { true }
+                R.id.logout -> viewModel.clickOnLogout().let { true }
                 else -> false
             }
 

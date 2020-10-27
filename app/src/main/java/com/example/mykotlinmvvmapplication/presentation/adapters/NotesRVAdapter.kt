@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
+import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import kotlinx.android.synthetic.main.item_note.view.*
 
-class NotesRVAdapter(val onClickListener: ((id: String) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+class NotesRVAdapter(val viewModel: MainViewModel) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -42,7 +43,7 @@ class NotesRVAdapter(val onClickListener: ((id: String) -> Unit)? = null) : Recy
                 (itemView as CardView).setCardBackgroundColor(ResourcesCompat.getColor(resources, getColor(), null))
 
                 itemView.setOnClickListener {
-                    onClickListener?.invoke(id)
+                    viewModel.clickOnNote(id)
                 }
             }
 

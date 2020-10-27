@@ -31,11 +31,11 @@ class SplashViewModel : ViewModel() {
     fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
     fun requestUser() {
-        interactor.giveUser().observeForever(observer)
+        interactor.getUser().observeForever(observer)
     }
 
     override fun onCleared() {
-        interactor.giveUser().removeObserver(observer)
+        interactor.getUser().removeObserver(observer)
         super.onCleared()
     }
 }

@@ -54,6 +54,9 @@ class NoteActivity : AppCompatActivity() {
                     it.message?.let { errorText -> renderError(errorText) }
                 } ?: return@observe
             })
+            getClickOnHomeLiveData().observe(this@NoteActivity) {
+                onBackPressed()
+            }
         }
 
         noteId = intent.getStringExtra(EXTRA_NOTE_ID)
@@ -82,8 +85,6 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        note_title.removeTextChangedListener(textChangeListener)
-        note_message.removeTextChangedListener(textChangeListener)
         note?.let {
             note_title.setText(it.title)
             note_message.setText(it.text)
@@ -99,17 +100,23 @@ class NoteActivity : AppCompatActivity() {
         override fun afterTextChanged(s: Editable?) = viewModel.save(note_title.text.toString(), note_message.text.toString(), note)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+            when (item.itemId) {
+                android.R.id.home -> {
+                    viewModel.clickOnHome().let { true }
+                }
+                else -> super.onOptionsItemSelected(item)
+            }
 
     override fun onBackPressed() {
         viewModel.updateNote()
         super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        note_title.removeTextChangedListener(textChangeListener)
+        note_message.removeTextChangedListener(textChangeListener)
+        super.onDestroy()
     }
 
 }

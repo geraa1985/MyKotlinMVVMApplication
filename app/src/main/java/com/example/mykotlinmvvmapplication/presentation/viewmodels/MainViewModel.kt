@@ -14,6 +14,9 @@ class MainViewModel : ViewModel() {
 
     private val successLiveData = MutableLiveData<List<Note>?>()
     private val errorLiveData = MutableLiveData<Throwable>()
+    private val clickOnFabLiveData = MutableLiveData<Boolean>()
+    private val clickOnLogoutLiveData = MutableLiveData<Boolean>()
+    private val clickOnNoteLiveData = MutableLiveData<String>()
 
     @Inject
     lateinit var interactor: NotesInteractor
@@ -28,15 +31,33 @@ class MainViewModel : ViewModel() {
 
     init {
         MyApp.appGraph.inject(this)
-        interactor.giveNotes().observeForever(observer)
+        interactor.getNotes().observeForever(observer)
     }
 
     fun getSuccessLiveData():LiveData<List<Note>?> = successLiveData
 
     fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
+    fun clickOnFab() {
+        clickOnFabLiveData.value = true
+    }
+
+    fun getClickOnFabLiveData():LiveData<Boolean> = clickOnFabLiveData
+
+    fun clickOnLogout() {
+        clickOnLogoutLiveData.value = true
+    }
+
+    fun getClickOnLogoutLiveData():LiveData<Boolean> = clickOnLogoutLiveData
+
+    fun clickOnNote(id:String) {
+        clickOnNoteLiveData.value = id
+    }
+
+    fun getClickOnNoteLiveData():LiveData<String> = clickOnNoteLiveData
+
     override fun onCleared() {
-        interactor.giveNotes().removeObserver(observer)
+        interactor.getNotes().removeObserver(observer)
         super.onCleared()
     }
 }

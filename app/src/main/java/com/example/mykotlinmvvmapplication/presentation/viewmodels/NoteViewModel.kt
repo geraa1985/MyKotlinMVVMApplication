@@ -16,6 +16,7 @@ class NoteViewModel : ViewModel() {
 
     private val successLiveData = MutableLiveData<Note?>()
     private val errorLiveData = MutableLiveData<Throwable>()
+    private val clickOnHomeLiveData = MutableLiveData<Boolean>()
 
     private var pendingNote: Note? = null
 
@@ -72,11 +73,17 @@ class NoteViewModel : ViewModel() {
 
     fun getNoteById(id: String) {
         this.id = id
-        interactor.giveNoteById(id).observeForever(observer)
+        interactor.getNoteById(id).observeForever(observer)
     }
 
+    fun clickOnHome(){
+        clickOnHomeLiveData.value = true
+    }
+
+    fun getClickOnHomeLiveData() = clickOnHomeLiveData
+
     override fun onCleared() {
-        id?.let { interactor.giveNoteById(it).removeObserver(observer) }
+        id?.let { interactor.getNoteById(it).removeObserver(observer) }
         super.onCleared()
     }
 }

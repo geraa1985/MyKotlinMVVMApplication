@@ -8,13 +8,13 @@ import com.example.mykotlinmvvmapplication.domain.irepositoty.IRepository
 
 class NotesInteractor (private val repository: IRepository): INotesInteractor {
 
-    override fun giveNotes(): LiveData<NoteResult> = repository.getNotes()
+    override fun getNotes(): LiveData<NoteResult> = repository.getNotes()
 
-    override fun giveNoteById(id: String): LiveData<NoteResult> = repository.getNoteById(id)
+    override fun getNoteById(id: String): LiveData<NoteResult> = repository.getNoteById(id)
 
     override fun saveNote(note: Note): LiveData<NoteResult> = repository.saveNote(note)
 
-    override fun giveUser(): LiveData<User?> = repository.getUser()
+    override fun getUser(): LiveData<User?> = repository.getUser()
 
 //реализуем бизнес-логику, если она появится когда-то))
 

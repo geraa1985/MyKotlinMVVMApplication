@@ -13,6 +13,7 @@ class SplashActivity : AppCompatActivity() {
 
     companion object {
         private const val RC_SIGN_IN = 777
+
         fun start(context: Context) = Intent(context, SplashActivity::class.java).apply {
             context.startActivity(this)
         }
@@ -44,13 +45,12 @@ class SplashActivity : AppCompatActivity() {
     private fun renderData(value: Boolean?) {
         value?.takeIf { it }?.let {
             MainActivity.start(this)
-            finish()
+            this@SplashActivity.finish()
         }
     }
 
     private fun startLoginActivity() {
-        val providers = listOf(
-                AuthUI.IdpConfig.GoogleBuilder().build())
+        val providers = listOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
         startActivityForResult(
                 AuthUI.getInstance()
