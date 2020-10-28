@@ -1,6 +1,5 @@
 package com.example.mykotlinmvvmapplication.presentation.adapters
 
-import android.content.res.Resources
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -44,7 +43,7 @@ class NotesRVAdapter(val viewModel: MainViewModel) : RecyclerView.Adapter<NotesR
                 tv_title.text = title
                 tv_title.paintFlags = Paint.UNDERLINE_TEXT_FLAG
                 tv_text.text = text
-                (itemView as CardView).setCardBackgroundColor(ResourcesCompat.getColor(Resources.getSystem(), getColor(), null))
+                (itemView as CardView).setCardBackgroundColor(ResourcesCompat.getColor(containerView.resources, getColor(), null))
 
                 itemView.setOnClickListener {
                     viewModel.clickOnNote(id)

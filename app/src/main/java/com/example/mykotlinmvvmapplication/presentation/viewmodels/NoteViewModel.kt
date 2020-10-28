@@ -14,9 +14,14 @@ import javax.inject.Inject
 
 class NoteViewModel : ViewModel() {
 
+    private var noteLiveData: LiveData<NoteResult>? = null
+    private var deleteLiveData: LiveData<NoteResult>? = null
+
     private val successLiveData = MutableLiveData<Note?>()
     private val errorLiveData = MutableLiveData<Throwable>()
     private val clickOnHomeLiveData = MutableLiveData<Boolean>()
+    private val clickOnColorLiveData = MutableLiveData<Boolean>()
+    private val clickOnDeleteLiveData = MutableLiveData<Boolean>()
 
     private var pendingNote: Note? = null
 
@@ -58,9 +63,16 @@ class NoteViewModel : ViewModel() {
         }
     }
 
-    private val observer = Observer { result: NoteResult ->
+    private val noteObserver = Observer { result: NoteResult ->
         when (result) {
             is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
+            is NoteResult.Error -> errorLiveData.value = result.error
+        }
+    }
+
+    private val deleteObserver = Observer { result: NoteResult ->
+        when (result) {
+            is NoteResult.Success<*> -> clickOnDeleteLiveData.value = true
             is NoteResult.Error -> errorLiveData.value = result.error
         }
     }
@@ -73,17 +85,34 @@ class NoteViewModel : ViewModel() {
 
     fun getNoteById(id: String) {
         this.id = id
-        interactor.getNoteById(id).observeForever(observer)
+        noteLiveData = interactor.getNoteById(id)
+        noteLiveData?.observeForever(noteObserver)
     }
 
-    fun clickOnHome(){
+    fun clickOnHome() {
         clickOnHomeLiveData.value = true
     }
 
     fun getClickOnHomeLiveData() = clickOnHomeLiveData
 
+    fun clickOnColor() {
+        clickOnColorLiveData.value = true
+    }
+
+//    fun getClickOnColorLiveData() = clickOnColorLiveData
+
+    fun clickOnDelete(id: String?) {
+        id?.let {
+            deleteLiveData = interactor.deleteNoteById(id)
+            deleteLiveData?.observeForever(deleteObserver)
+        }
+    }
+
+    fun getClickOnDeleteLiveData() = clickOnDeleteLiveData
+
     override fun onCleared() {
-        id?.let { interactor.getNoteById(it).removeObserver(observer) }
+        noteLiveData?.removeObserver(noteObserver)
+        deleteLiveData?.removeObserver(deleteObserver)
         super.onCleared()
     }
 }

@@ -10,4 +10,6 @@
     <string name="logout_message">Are you sure you want to logout?</string>
     <string name="logout_yes">yes</string>
     <string name="logout_no">no</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_note_color">Color</string>
 </resources>

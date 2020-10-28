@@ -16,6 +16,8 @@ class NotesInteractor (private val repository: IRepository): INotesInteractor {
 
     override fun getUser(): LiveData<User?> = repository.getUser()
 
-//реализуем бизнес-логику, если она появится когда-то))
+    override fun deleteNoteById(id: String): LiveData<NoteResult> = repository.deleteNoteById(id)
+
+    //реализуем бизнес-логику, если она появится когда-то))
 
 }

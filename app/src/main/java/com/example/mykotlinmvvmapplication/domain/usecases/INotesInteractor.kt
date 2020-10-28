@@ -10,4 +10,6 @@ interface INotesInteractor {
     fun getNoteById(id: String): LiveData<NoteResult>
     fun saveNote(note: Note): LiveData<NoteResult>
     fun getUser(): LiveData<User?>
+    fun deleteNoteById(id: String): LiveData<NoteResult>
+
 }
