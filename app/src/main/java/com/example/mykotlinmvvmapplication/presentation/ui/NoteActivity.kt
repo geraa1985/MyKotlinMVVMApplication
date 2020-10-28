@@ -31,7 +31,7 @@ class NoteActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel: NoteViewModel by lazy {
+    val viewModel: NoteViewModel by lazy {
         ViewModelProvider(this).get(NoteViewModel::class.java)
     }
 
@@ -59,9 +59,18 @@ class NoteActivity : AppCompatActivity() {
                 onBackPressed()
             }
             getClickOnDeleteLiveData().observe(this@NoteActivity){
-                this@NoteActivity.finish()
+                it.let {
+                    DeleteNoteDialogFragment().apply {
+                        show(supportFragmentManager, "DELETE")
+                        getConfirmToDeleteLiveData().observe(this@NoteActivity){
+                            viewModel.confirmedDelete(noteId)
+                        }
+                    }
+                }
             }
-
+            getSuccessDeleteLiveData().observe(this@NoteActivity){
+                finish()
+            }
         }
 
         noteId = intent.getStringExtra(EXTRA_NOTE_ID)
@@ -109,7 +118,7 @@ class NoteActivity : AppCompatActivity() {
             when (item.itemId) {
                 android.R.id.home -> { viewModel.clickOnHome().let { true } }
                 R.id.note_color -> { viewModel.clickOnColor().let { true } }
-                R.id.note_delete -> { viewModel.clickOnDelete(noteId).let { true } }
+                R.id.note_delete -> { viewModel.clickOnDelete().let { true } }
                 else -> super.onOptionsItemSelected(item)
             }
 

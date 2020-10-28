@@ -22,6 +22,7 @@ class NoteViewModel : ViewModel() {
     private val clickOnHomeLiveData = MutableLiveData<Boolean>()
     private val clickOnColorLiveData = MutableLiveData<Boolean>()
     private val clickOnDeleteLiveData = MutableLiveData<Boolean>()
+    private val successDeleteLiveData = MutableLiveData<Boolean>()
 
     private var pendingNote: Note? = null
 
@@ -72,7 +73,7 @@ class NoteViewModel : ViewModel() {
 
     private val deleteObserver = Observer { result: NoteResult ->
         when (result) {
-            is NoteResult.Success<*> -> clickOnDeleteLiveData.value = true
+            is NoteResult.Success<*> -> successDeleteLiveData.value = true
             is NoteResult.Error -> errorLiveData.value = result.error
         }
     }
@@ -101,18 +102,24 @@ class NoteViewModel : ViewModel() {
 
 //    fun getClickOnColorLiveData() = clickOnColorLiveData
 
-    fun clickOnDelete(id: String?) {
+    fun clickOnDelete() {
+        clickOnDeleteLiveData.value = true
+    }
+
+    fun getClickOnDeleteLiveData() = clickOnDeleteLiveData
+
+    fun confirmedDelete(id: String?) {
         id?.let {
             deleteLiveData = interactor.deleteNoteById(id)
             deleteLiveData?.observeForever(deleteObserver)
         }
     }
 
-    fun getClickOnDeleteLiveData() = clickOnDeleteLiveData
+    fun getSuccessDeleteLiveData() = successDeleteLiveData
 
     override fun onCleared() {
         noteLiveData?.removeObserver(noteObserver)
-        deleteLiveData?.removeObserver(deleteObserver)
+//        deleteLiveData?.removeObserver(deleteObserver)
         super.onCleared()
     }
 }

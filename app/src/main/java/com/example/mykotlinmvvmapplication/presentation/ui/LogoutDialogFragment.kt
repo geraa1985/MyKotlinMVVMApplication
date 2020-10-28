@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.LogoutViewModel
 import com.firebase.ui.auth.AuthUI
-
 import kotlinx.android.synthetic.main.dialog_logout.*
 
 class LogoutDialogFragment : DialogFragment(), View.OnClickListener {

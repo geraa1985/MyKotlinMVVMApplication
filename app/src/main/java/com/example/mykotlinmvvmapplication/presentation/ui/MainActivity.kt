@@ -24,8 +24,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val dialogFragment = LogoutDialogFragment()
-
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
@@ -48,15 +46,13 @@ class MainActivity : AppCompatActivity() {
                     it.message?.let { errorText -> renderError(errorText) }
                 } ?: return@observe
             })
-            getClickOnFabLiveData().observe(this@MainActivity){
+            getClickOnFabLiveData().observe(this@MainActivity) {
                 it.let { NoteActivity.start(this@MainActivity) }
             }
-            getClickOnLogoutLiveData().observe(this@MainActivity){
-                it.let {
-                    dialogFragment.show(supportFragmentManager, "LOGOUT")
-                }
+            getClickOnLogoutLiveData().observe(this@MainActivity) {
+                it.let { LogoutDialogFragment().show(supportFragmentManager, "LOGOUT") }
             }
-            getClickOnNoteLiveData().observe(this@MainActivity){
+            getClickOnNoteLiveData().observe(this@MainActivity) {
                 NoteActivity.start(this@MainActivity, it)
             }
         }
