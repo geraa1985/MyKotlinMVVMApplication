@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
-class FireStoreAnswer : IData {
+class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: FirebaseFirestore) : IData {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"
@@ -17,14 +17,13 @@ class FireStoreAnswer : IData {
     }
 
     private val user
-        get() = FirebaseAuth.getInstance().currentUser
+        get() = fauth.currentUser
 
-    private val firestore = FirebaseFirestore.getInstance()
 
     private val userNotesCollection
         get() =
             user?.let {
-                firestore.collection(USERS_COLLECTION).document(it.uid).collection(NOTES_COLLECTION)
+                fstore.collection(USERS_COLLECTION).document(it.uid).collection(NOTES_COLLECTION)
             } ?: throw NoAuthExceptions()
 
 

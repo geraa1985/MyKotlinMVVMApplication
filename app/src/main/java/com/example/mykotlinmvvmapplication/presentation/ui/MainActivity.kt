@@ -8,13 +8,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.adapters.NotesRVAdapter
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,9 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
+    private val viewModel: MainViewModel by viewModel()
 
     private lateinit var adapter: NotesRVAdapter
 

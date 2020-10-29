@@ -4,22 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Note
-import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
-import javax.inject.Inject
+import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
     private val successLiveData = MutableLiveData<List<Note>?>()
     private val errorLiveData = MutableLiveData<Throwable>()
     private val clickOnFabLiveData = MutableLiveData<Boolean>()
     private val clickOnLogoutLiveData = MutableLiveData<Boolean>()
     private val clickOnNoteLiveData = MutableLiveData<String>()
-
-    @Inject
-    lateinit var interactor: NotesInteractor
 
     private val observer = Observer{ result: NoteResult? ->
         result?:return@Observer
@@ -30,7 +25,6 @@ class MainViewModel : ViewModel() {
     }
 
     init {
-        MyApp.appGraph.inject(this)
         interactor.getNotes().observeForever(observer)
     }
 

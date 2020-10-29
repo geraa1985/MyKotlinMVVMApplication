@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.SplashViewModel
 import com.firebase.ui.auth.AuthUI
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class SplashActivity : AppCompatActivity() {
 
@@ -19,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel = SplashViewModel()
+    private val viewModel: SplashViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

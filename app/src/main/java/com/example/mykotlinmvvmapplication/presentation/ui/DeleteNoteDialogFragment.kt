@@ -9,17 +9,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.DeleteNoteViewModel
 import kotlinx.android.synthetic.main.dialog_delete.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class DeleteNoteDialogFragment : DialogFragment(), View.OnClickListener {
 
     private val confirmToDeleteLiveData = MutableLiveData<Boolean>()
 
-    private val viewModel by lazy { ViewModelProvider(this).get(DeleteNoteViewModel::class.java) }
-
+    private val viewModel: DeleteNoteViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -35,13 +34,13 @@ class DeleteNoteDialogFragment : DialogFragment(), View.OnClickListener {
             getClickOnYesLiveData().observe(this@DeleteNoteDialogFragment) {
                 confirmToDeleteLiveData.value = true
             }
-            getClickOnNoLiveData().observe(this@DeleteNoteDialogFragment){
+            getClickOnNoLiveData().observe(this@DeleteNoteDialogFragment) {
                 dismiss()
             }
         }
     }
 
-    fun getConfirmToDeleteLiveData():LiveData<Boolean> = confirmToDeleteLiveData
+    fun getConfirmToDeleteLiveData(): LiveData<Boolean> = confirmToDeleteLiveData
 
     override fun onClick(v: View?) {
         when (v?.id) {

@@ -4,15 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.MyApp
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
-import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
+import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
 import java.util.*
-import javax.inject.Inject
 
-class NoteViewModel : ViewModel() {
+class NoteViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
     private var noteLiveData: LiveData<NoteResult>? = null
     private var deleteLiveData: LiveData<NoteResult>? = null
@@ -25,13 +23,6 @@ class NoteViewModel : ViewModel() {
     private val successDeleteLiveData = MutableLiveData<Boolean>()
 
     private var pendingNote: Note? = null
-
-    @Inject
-    lateinit var interactor: NotesInteractor
-
-    init {
-        MyApp.appGraph.inject(this)
-    }
 
     fun save(title: String, message: String, color: Color, note: Note?) {
 

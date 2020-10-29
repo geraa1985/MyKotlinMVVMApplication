@@ -16,7 +16,7 @@ import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 class ColorPickerView : LinearLayout {
 
     companion object {
-        private const val PALETTE_ANIMATION_DURATION = 150L
+        private const val PALETTE_ANIMATION_DURATION = 750L
         private const val HEIGHT = "height"
         private const val SCALE = "scale"
         @Dimension(unit = DP) private const val COLOR_VIEW_PADDING = 8

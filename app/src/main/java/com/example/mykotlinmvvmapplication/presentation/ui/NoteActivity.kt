@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
@@ -18,6 +17,7 @@ import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColorInt
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import kotlinx.android.synthetic.main.activity_note.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,9 +33,7 @@ class NoteActivity : AppCompatActivity() {
         }
     }
 
-    val viewModel: NoteViewModel by lazy {
-        ViewModelProvider(this).get(NoteViewModel::class.java)
-    }
+    val viewModel: NoteViewModel by viewModel()
 
     private var note: Note? = null
     private var noteId: String? = null
@@ -103,7 +101,7 @@ class NoteActivity : AppCompatActivity() {
 
     private fun setToolbar() {
         note?.let {
-            supportActionBar?.title = it.lastChanged.let {date ->
+            supportActionBar?.title = it.lastChanged.let { date ->
                 SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(date)
             } ?: getString(R.string.title_new_note)
             color = it.color

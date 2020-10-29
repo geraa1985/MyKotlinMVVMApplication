@@ -7,16 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.LogoutViewModel
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.dialog_logout.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class LogoutDialogFragment : DialogFragment(), View.OnClickListener {
 
-    private val viewModel by lazy { ViewModelProvider(this).get(LogoutViewModel::class.java) }
-
+    private val viewModel: LogoutViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -32,12 +31,11 @@ class LogoutDialogFragment : DialogFragment(), View.OnClickListener {
             getClickOnYesLiveData().observe(this@LogoutDialogFragment) {
                 logout()
             }
-            getClickOnNoLiveData().observe(this@LogoutDialogFragment){
+            getClickOnNoLiveData().observe(this@LogoutDialogFragment) {
                 dismiss()
             }
         }
     }
-
 
     override fun onClick(v: View?) {
         when (v?.id) {
