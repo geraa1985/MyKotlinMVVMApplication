@@ -33,26 +33,27 @@ class NoteViewModel : ViewModel() {
         MyApp.appGraph.inject(this)
     }
 
-    fun save(title: String, message: String, note: Note?) {
+    fun save(title: String, message: String, color: Color, note: Note?) {
 
         if (title.length < 3) return
 
         val newNote = note?.copy(
                 title = title,
                 text = message,
-                lastChanged = Date()
+                lastChanged = Date(),
+                color = color
         ) ?: Note(
                 UUID.randomUUID().toString(),
                 title = title,
                 text = message,
                 lastChanged = Date(),
-                color = setColor()
+                color = color
         )
 
         pendingNote = newNote
     }
 
-    private fun setColor(): Color {
+    fun setColor(): Color {
         val list = Color.values()
         list.shuffle()
         return list.first()
@@ -100,7 +101,7 @@ class NoteViewModel : ViewModel() {
         clickOnColorLiveData.value = true
     }
 
-//    fun getClickOnColorLiveData() = clickOnColorLiveData
+    fun getClickOnColorLiveData() = clickOnColorLiveData
 
     fun clickOnDelete() {
         clickOnDeleteLiveData.value = true
@@ -119,7 +120,7 @@ class NoteViewModel : ViewModel() {
 
     override fun onCleared() {
         noteLiveData?.removeObserver(noteObserver)
-//        deleteLiveData?.removeObserver(deleteObserver)
+        deleteLiveData?.removeObserver(deleteObserver)
         super.onCleared()
     }
 }

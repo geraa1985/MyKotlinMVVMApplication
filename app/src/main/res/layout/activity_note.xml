@@ -17,6 +17,23 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             app:layout_scrollFlags="scroll|enterAlways"
             app:title="Notes App" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.example.mykotlinmvvmapplication.presentation.customviews.ColorPickerView
+                android:id="@+id/colorPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize" />
+        </HorizontalScrollView>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -57,6 +74,5 @@
             android:padding="@dimen/note_activity_message_paddings"
             android:scrollbars="vertical" />
     </LinearLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
