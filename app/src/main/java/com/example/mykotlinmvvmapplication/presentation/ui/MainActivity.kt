@@ -6,16 +6,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.adapters.NotesRVAdapter
-import com.example.mykotlinmvvmapplication.presentation.base.BaseActivity
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<List<Note>?>() {
+class MainActivity : AppCompatActivity() {
 
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
@@ -23,32 +24,53 @@ class MainActivity : BaseActivity<List<Note>?>() {
         }
     }
 
-    private val dialogFragment = LogoutDialogFragment()
-
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
-
-    override val layoutRes = R.layout.activity_main
+    private val viewModel: MainViewModel by viewModel()
 
     private lateinit var adapter: NotesRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        adapter = NotesRVAdapter { NoteActivity.start(this, it) }
+        viewModel.apply {
+            getSuccessLiveData().observe(this@MainActivity, { value ->
+                value?.let {
+                    renderData(value)
+                } ?: return@observe
+            })
+            getErrorLiveData().observe(this@MainActivity, { error ->
+                error?.let {
+                    it.message?.let { errorText -> renderError(errorText) }
+                } ?: return@observe
+            })
+            getClickOnFabLiveData().observe(this@MainActivity) {
+                it.let { NoteActivity.start(this@MainActivity) }
+            }
+            getClickOnLogoutLiveData().observe(this@MainActivity) {
+                it.let { LogoutDialogFragment().show(supportFragmentManager, "LOGOUT") }
+            }
+            getClickOnNoteLiveData().observe(this@MainActivity) {
+                NoteActivity.start(this@MainActivity, it)
+            }
+        }
+
+        adapter = NotesRVAdapter(viewModel)
 
         rv_notes.layoutManager = GridLayoutManager(this, 2)
         rv_notes.adapter = adapter
 
         fab.setOnClickListener {
-            NoteActivity.start(this)
+            viewModel.clickOnFab()
         }
     }
 
-    override fun renderData(value: List<Note>?) {
+    private fun renderData(value: List<Note>?) {
         value?.let { adapter.notes = value }
+    }
+
+    private fun renderError(errorText: String) {
+        Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean =
@@ -56,9 +78,7 @@ class MainActivity : BaseActivity<List<Note>?>() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
             when (item.itemId) {
-                R.id.logout -> dialogFragment
-                        .show(supportFragmentManager, "LOGOUT")
-                        .let { true }
+                R.id.logout -> viewModel.clickOnLogout().let { true }
                 else -> false
             }
 

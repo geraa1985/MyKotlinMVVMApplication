@@ -18,4 +18,6 @@ class Repository(private val remoteData: IData) : IRepository {
     override fun getNoteById(id: String): LiveData<NoteResult> = remoteData.getNoteById(id)
 
     override fun getUser(): LiveData<User?> = remoteData.getCurrentUser()
+
+    override fun deleteNoteById(id: String): LiveData<NoteResult> = remoteData.deleteNoteById(id)
 }

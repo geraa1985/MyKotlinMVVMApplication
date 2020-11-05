@@ -1,32 +1,32 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
-import com.example.mykotlinmvvmapplication.MyApp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.data.network.NoAuthExceptions
 import com.example.mykotlinmvvmapplication.domain.entities.User
-import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
-import com.example.mykotlinmvvmapplication.presentation.base.BaseViewModel
-import javax.inject.Inject
+import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
 
-class SplashViewModel : BaseViewModel<Boolean?>() {
+class SplashViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
-    @Inject
-    lateinit var interactor: NotesInteractor
-
-    init {
-        MyApp.appGraph.inject(this)
-    }
+    private val successLiveData = MutableLiveData<Boolean?>()
+    private val errorLiveData = MutableLiveData<Throwable>()
 
     private val observer = {user: User? ->
         successLiveData.value = user?.let { true }
         errorLiveData.value = NoAuthExceptions()
     }
 
+    fun getSuccessLiveData(): LiveData<Boolean?> = successLiveData
+
+    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
+
     fun requestUser() {
-        interactor.giveUser().observeForever(observer)
+        interactor.getUser().observeForever(observer)
     }
 
     override fun onCleared() {
-        interactor.giveUser().removeObserver(observer)
+        interactor.getUser().removeObserver(observer)
         super.onCleared()
     }
 }

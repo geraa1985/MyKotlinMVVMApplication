@@ -11,5 +11,6 @@ interface IRepository {
     fun saveNote(note: Note): LiveData<NoteResult>
     fun getNoteById(id: String): LiveData<NoteResult>
     fun getUser(): LiveData<User?>
+    fun deleteNoteById(id: String): LiveData<NoteResult>
 
 }

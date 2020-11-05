@@ -11,31 +11,34 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class FabBehavior(context: Context, attributeSet: AttributeSet) : FloatingActionButton.Behavior(context, attributeSet) {
 
     override fun onStartNestedScroll(
-        coordinatorLayout: CoordinatorLayout,
-        child: FloatingActionButton,
-        directTargetChild: View,
-        target: View,
-        axes: Int,
-        type: Int
+            coordinatorLayout: CoordinatorLayout,
+            child: FloatingActionButton,
+            directTargetChild: View,
+            target: View,
+            axes: Int,
+            type: Int
     ): Boolean {
 
-        return axes == ViewCompat.SCROLL_AXIS_VERTICAL
-                || super.onStartNestedScroll(
-            coordinatorLayout,
-            child, directTargetChild, target, axes, type
+        return axes == ViewCompat.SCROLL_AXIS_VERTICAL || super.onStartNestedScroll(
+                coordinatorLayout,
+                child,
+                directTargetChild,
+                target,
+                axes,
+                type
         )
     }
 
     override fun onNestedScroll(
-        coordinatorLayout: CoordinatorLayout,
-        child: FloatingActionButton,
-        target: View,
-        dxConsumed: Int,
-        dyConsumed: Int,
-        dxUnconsumed: Int,
-        dyUnconsumed: Int,
-        type: Int,
-        consumed: IntArray
+            coordinatorLayout: CoordinatorLayout,
+            child: FloatingActionButton,
+            target: View,
+            dxConsumed: Int,
+            dyConsumed: Int,
+            dxUnconsumed: Int,
+            dyUnconsumed: Int,
+            type: Int,
+            consumed: IntArray
     ) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed)
 
@@ -50,7 +53,6 @@ class FabBehavior(context: Context, attributeSet: AttributeSet) : FloatingAction
             child.show()
         }
     }
-
 
 
 }
