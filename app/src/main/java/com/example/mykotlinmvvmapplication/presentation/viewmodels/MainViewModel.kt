@@ -1,5 +1,6 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -16,8 +17,8 @@ class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
     private val clickOnLogoutLiveData = MutableLiveData<Boolean>()
     private val clickOnNoteLiveData = MutableLiveData<String>()
 
-    private val observer = Observer{ result: NoteResult? ->
-        result?:return@Observer
+    private val observer = Observer { result: NoteResult? ->
+        result ?: return@Observer
         when (result) {
             is NoteResult.Success<*> -> successLiveData.value = result.data as List<Note>?
             is NoteResult.Error -> errorLiveData.value = result.error
@@ -28,7 +29,7 @@ class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
         interactor.getNotes().observeForever(observer)
     }
 
-    fun getSuccessLiveData():LiveData<List<Note>?> = successLiveData
+    fun getSuccessLiveData(): LiveData<List<Note>?> = successLiveData
 
     fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
 
@@ -36,21 +37,22 @@ class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
         clickOnFabLiveData.value = true
     }
 
-    fun getClickOnFabLiveData():LiveData<Boolean> = clickOnFabLiveData
+    fun getClickOnFabLiveData(): LiveData<Boolean> = clickOnFabLiveData
 
     fun clickOnLogout() {
         clickOnLogoutLiveData.value = true
     }
 
-    fun getClickOnLogoutLiveData():LiveData<Boolean> = clickOnLogoutLiveData
+    fun getClickOnLogoutLiveData(): LiveData<Boolean> = clickOnLogoutLiveData
 
-    fun clickOnNote(id:String) {
+    fun clickOnNote(id: String) {
         clickOnNoteLiveData.value = id
     }
 
-    fun getClickOnNoteLiveData():LiveData<String> = clickOnNoteLiveData
+    fun getClickOnNoteLiveData(): LiveData<String> = clickOnNoteLiveData
 
-    override fun onCleared() {
+    @VisibleForTesting
+    public override fun onCleared() {
         interactor.getNotes().removeObserver(observer)
         super.onCleared()
     }

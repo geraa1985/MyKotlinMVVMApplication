@@ -32,7 +32,7 @@ class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: Fireb
                 try {
                     userNotesCollection.orderBy("lastChanged", Query.Direction.DESCENDING).addSnapshotListener { snapshot, error ->
                         value = error?.let {
-                            throw it
+                            NoteResult.Error(it)
                         } ?: snapshot?.let { querySnapshot ->
                             val notes = querySnapshot.documents.map { it.toObject(Note::class.java) }
                             NoteResult.Success(notes)
@@ -50,7 +50,7 @@ class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: Fireb
                             .addOnSuccessListener {
                                 value = NoteResult.Success(note)
                             }.addOnFailureListener {
-                                throw it
+                                value = NoteResult.Error(it)
                             }
                 } catch (e: Throwable) {
                     value = NoteResult.Error(e)
@@ -65,7 +65,7 @@ class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: Fireb
                                 val note = it.toObject(Note::class.java) as Note
                                 value = NoteResult.Success(note)
                             }.addOnFailureListener {
-                                throw it
+                                value = NoteResult.Error(it)
                             }
                 } catch (e: Throwable) {
                     value = NoteResult.Error(e)
@@ -79,7 +79,7 @@ class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: Fireb
                             .addOnSuccessListener {
                                 value = NoteResult.Success(null)
                             }.addOnFailureListener {
-                                throw it
+                                value = NoteResult.Error(it)
                             }
                 } catch (e: Throwable) {
                     value = NoteResult.Error(e)

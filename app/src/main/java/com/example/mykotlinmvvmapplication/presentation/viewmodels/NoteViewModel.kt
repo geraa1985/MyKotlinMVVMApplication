@@ -58,7 +58,10 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
     private val noteObserver = Observer { result: NoteResult ->
         when (result) {
-            is NoteResult.Success<*> -> successLiveData.value = result.data as Note?
+            is NoteResult.Success<*> -> {
+                successLiveData.value = result.data as Note?
+                pendingNote = successLiveData.value
+            }
             is NoteResult.Error -> errorLiveData.value = result.error
         }
     }

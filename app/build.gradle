@@ -19,7 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.example.mykotlinmvvmapplication.TestAppJUnitRunner"
     }
 
     buildTypes {
@@ -33,9 +33,9 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
-    implementation 'com.google.firebase:firebase-firestore:21.7.1'
+    implementation 'com.google.firebase:firebase-firestore:22.0.0'
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
@@ -64,5 +64,14 @@ dependencies {
 
     implementation 'org.koin:koin-android:1.0.1'
     implementation 'org.koin:koin-android-viewmodel:1.0.1'
+
+    implementation 'io.mockk:mockk:1.10.2'
+    implementation "io.mockk:mockk-android:1.10.2"
+
+    implementation 'androidx.arch.core:core-testing:2.1.0'
+
+    implementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.test.espresso:espresso-intents:3.3.0'
+    implementation 'androidx.test.espresso:espresso-contrib:3.3.0'
 
 }
