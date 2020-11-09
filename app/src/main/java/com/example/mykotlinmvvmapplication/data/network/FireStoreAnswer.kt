@@ -32,19 +32,20 @@ class FireStoreAnswer(private val fauth: FirebaseAuth, private val fstore: Fireb
 
     override fun getNotes(): ReceiveChannel<NoteResult> =
             Channel<NoteResult>(Channel.CONFLATED).apply {
-        try {
-            userNotesCollection.orderBy("lastChanged", Query.Direction.DESCENDING).addSnapshotListener { snapshot, error ->
-                error?.let {
-                    NoteResult.Error(it)
-                } ?: snapshot?.let { querySnapshot ->
-                    val notes = querySnapshot.documents.map { it.toObject(Note::class.java) }
-                    NoteResult.Success(notes)
-                }?.let { offer (it) }
+                try {
+                    userNotesCollection.orderBy("lastChanged", Query.Direction.DESCENDING).addSnapshotListener { snapshot, error ->
+                        val value = error?.let {
+                            NoteResult.Error(it)
+                        } ?: snapshot?.let { querySnapshot ->
+                            val notes = querySnapshot.documents.map { it.toObject(Note::class.java) }
+                            NoteResult.Success(notes)
+                        }
+                        value?.let { offer(it) }
+                    }
+                } catch (e: Throwable) {
+                    offer(NoteResult.Error(e))
+                }
             }
-        } catch (e: Throwable) {
-            offer(NoteResult.Error(e))
-        }
-    }
 
     override suspend fun saveNote(note: Note): Note? = suspendCoroutine { continuation ->
         try {
