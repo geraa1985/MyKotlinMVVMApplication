@@ -5,22 +5,15 @@ import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext by lazy { Dispatchers.Default + Job() }
-
-    private lateinit var jobGetNote:Job
-    private lateinit var jobSaveNote: Job
-    private lateinit var jobDeleteNote: Job
 
     private val successChannel = Channel<Note?>()
     private val errorChannel = Channel<Throwable>()
@@ -61,7 +54,7 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), Cor
     }
 
     fun updateNote() {
-        jobSaveNote = launch {
+        launch {
             pendingNote?.let {
                 interactor.saveNote(it)
             }
@@ -74,7 +67,7 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), Cor
 
     fun getNoteById(id: String) {
         this.id = id
-        jobGetNote = launch {
+        launch {
             try {
                 interactor.getNoteById(id)?.let {
                     pendingNote = it
@@ -106,7 +99,7 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), Cor
 
     fun confirmedDelete(id: String?) {
         id?.let {
-            jobDeleteNote = launch {
+            launch {
                 try {
                     pendingNote?.let { successDeleteChannel.send(interactor.deleteNoteById(id)) }
                     pendingNote = null
@@ -121,9 +114,7 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), Cor
     fun getSuccessDeleteChannel(): ReceiveChannel<Unit?> = successDeleteChannel
 
     override fun onCleared() {
-        jobGetNote.cancel()
-        jobSaveNote.cancel()
-        jobDeleteNote.cancel()
+        cancel()
         super.onCleared()
     }
 }

@@ -38,7 +38,6 @@ class NoteActivity : AppCompatActivity(), CoroutineScope {
     }
 
     override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
-    private lateinit var jobWithNote: Job
 
     val viewModel: NoteViewModel by viewModel()
 
@@ -85,7 +84,7 @@ class NoteActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onStart() {
         super.onStart()
-        jobWithNote = launch {
+        launch {
             viewModel.apply {
                 getSuccessChannel().consumeEach {
                     renderData(it)
@@ -153,11 +152,6 @@ class NoteActivity : AppCompatActivity(), CoroutineScope {
     override fun onBackPressed() {
         viewModel.updateNote()
         super.onBackPressed()
-    }
-
-    override fun onStop() {
-        jobWithNote.cancel()
-        super.onStop()
     }
 
     override fun onDestroy() {

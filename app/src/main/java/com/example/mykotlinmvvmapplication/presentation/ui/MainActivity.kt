@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
     override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
-    private lateinit var jobGetNotes: Job
 
     private val viewModel: MainViewModel by viewModel()
 
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onStart() {
         super.onStart()
 
-        jobGetNotes = launch {
+        launch {
             viewModel.apply {
                 getSuccessChannel().consumeEach { notes ->
                     notes?.let { renderData(it) }
@@ -96,10 +95,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 else -> false
             }
 
-    override fun onStop() {
-        jobGetNotes.cancel()
-        super.onStop()
-    }
 
     override fun onDestroy() {
         cancel()

@@ -21,8 +21,6 @@ class MainViewModel(private val interactor: INotesInteractor)
         Dispatchers.Default + Job()
     }
 
-    private val jobGetNotes: Job
-
     private val successChannel = Channel<List<Note>?>(Channel.CONFLATED)
     private val errorChannel = Channel<Throwable>()
 
@@ -31,7 +29,7 @@ class MainViewModel(private val interactor: INotesInteractor)
     private val clickOnNoteLiveData = MutableLiveData<String>()
 
     init {
-        jobGetNotes = launch {
+        launch {
             interactor.getNotes().consumeEach {
                 when (it) {
                     is NoteResult.Success<*> -> successChannel.send(it.data as? List<Note>?)
@@ -65,7 +63,7 @@ class MainViewModel(private val interactor: INotesInteractor)
 
     @VisibleForTesting
     public override fun onCleared() {
-        jobGetNotes.cancel()
+        cancel()
         super.onCleared()
     }
 }
