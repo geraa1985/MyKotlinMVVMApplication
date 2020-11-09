@@ -24,7 +24,6 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
     }
 
     override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
-    private lateinit var job: Job
 
     private val viewModel: SplashViewModel by viewModel()
 
@@ -33,16 +32,19 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
 
         viewModel.apply {
-            job = launch {
+            launch {
                 getSuccessChannel().consumeEach {
                     it?.let {
                         renderData(true)
                     }
                 }
+            }
+            launch {
                 getErrorChannel().consumeEach {
                     startLoginActivity()
                 }
             }
+
         }
     }
 
@@ -77,6 +79,11 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
             finish()
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        cancel()
+        super.onDestroy()
     }
 
 }

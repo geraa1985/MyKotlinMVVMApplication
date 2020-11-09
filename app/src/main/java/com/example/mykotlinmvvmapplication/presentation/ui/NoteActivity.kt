@@ -85,16 +85,18 @@ class NoteActivity : AppCompatActivity(), CoroutineScope {
     override fun onStart() {
         super.onStart()
         launch {
-            viewModel.apply {
-                getSuccessChannel().consumeEach {
-                    renderData(it)
-                }
-                getErrorChannel().consumeEach { error ->
-                    error.message?.let { renderError(it) }
-                }
-                getSuccessDeleteChannel().consumeEach {
-                    finish()
-                }
+            viewModel.getSuccessChannel().consumeEach {
+                renderData(it)
+            }
+        }
+        launch {
+            viewModel.getErrorChannel().consumeEach { error ->
+                error.message?.let { renderError(it) }
+            }
+        }
+        launch {
+            viewModel.getSuccessDeleteChannel().consumeEach {
+                finish()
             }
         }
     }

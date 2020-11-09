@@ -65,18 +65,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         super.onStart()
 
         launch {
-            viewModel.apply {
-                getSuccessChannel().consumeEach { notes ->
-                    notes?.let { renderData(it) }
-                }
-                getErrorChannel().consumeEach { error ->
-                    error.message?.let {
-                        renderError(it)
-                    }
+            viewModel.getSuccessChannel().consumeEach { notes ->
+                notes?.let { renderData(it) }
+            }
+        }
+
+        launch {
+            viewModel.getErrorChannel().consumeEach { error ->
+                error.message?.let {
+                    renderError(it)
                 }
             }
         }
     }
+
 
     private fun renderData(value: List<Note>?) {
         value?.let { adapter.notes = value }
