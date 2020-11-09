@@ -3,35 +3,47 @@ package com.example.mykotlinmvvmapplication.presentation.viewmodels
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.consumeEach
+import kotlin.coroutines.CoroutineContext
 
-class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
+@ExperimentalCoroutinesApi
+class MainViewModel(private val interactor: INotesInteractor)
+    : ViewModel(),CoroutineScope {
 
-    private val successLiveData = MutableLiveData<List<Note>?>()
-    private val errorLiveData = MutableLiveData<Throwable>()
+    override val coroutineContext: CoroutineContext by lazy {
+        Dispatchers.Default + Job()
+    }
+
+    private val jobGetNotes: Job
+
+    private val successChannel = Channel<List<Note>?>(Channel.CONFLATED)
+    private val errorChannel = Channel<Throwable>()
+
     private val clickOnFabLiveData = MutableLiveData<Boolean>()
     private val clickOnLogoutLiveData = MutableLiveData<Boolean>()
     private val clickOnNoteLiveData = MutableLiveData<String>()
 
-    private val observer = Observer { result: NoteResult? ->
-        result ?: return@Observer
-        when (result) {
-            is NoteResult.Success<*> -> successLiveData.value = result.data as List<Note>?
-            is NoteResult.Error -> errorLiveData.value = result.error
+    init {
+        jobGetNotes = launch {
+            interactor.getNotes().consumeEach {
+                when (it) {
+                    is NoteResult.Success<*> -> successChannel.send(it.data as? List<Note>?)
+                    is NoteResult.Error -> errorChannel.send(it.error)
+                }
+            }
         }
     }
 
-    init {
-        interactor.getNotes().observeForever(observer)
-    }
+    fun getSuccessChannel(): ReceiveChannel<List<Note>?> = successChannel
 
-    fun getSuccessLiveData(): LiveData<List<Note>?> = successLiveData
-
-    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
+    fun getErrorChannel(): ReceiveChannel<Throwable> = errorChannel
 
     fun clickOnFab() {
         clickOnFabLiveData.value = true
@@ -53,7 +65,7 @@ class MainViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
     @VisibleForTesting
     public override fun onCleared() {
-        interactor.getNotes().removeObserver(observer)
+        jobGetNotes.cancel()
         super.onCleared()
     }
 }

@@ -1,15 +1,16 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
-import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
 import io.mockk.clearAllMocks
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,83 +23,51 @@ class NoteViewModelTest {
     private val mockInteractor = mockk<INotesInteractor>()
     private lateinit var viewModel: NoteViewModel
     private val testNote = Note("1", "title1", "text1")
-    private val noteLiveData = MutableLiveData<NoteResult>()
 
     @Before
     fun setup() {
         clearAllMocks()
-
-        every { mockInteractor.saveNote(any()) } returns noteLiveData
-        every { mockInteractor.getNoteById(testNote.id) } returns noteLiveData
-        every { mockInteractor.deleteNoteById(testNote.id) } returns noteLiveData
-
         viewModel = NoteViewModel(mockInteractor)
     }
 
     @Test
-    fun `getNoteById return success`() {
-        var result: Note? = null
-        val testData = testNote
-
-        viewModel.getSuccessLiveData().observeForever {
-            result = it
-        }
+    fun `getNoteById return success`() = runBlocking {
         viewModel.getNoteById(testNote.id)
-        noteLiveData.value = NoteResult.Success(testNote)
-
-        assertEquals(testData, result)
+        delay(1000)
+        coVerify(exactly = 1) { mockInteractor.getNoteById(testNote.id) }
     }
 
     @Test
-    fun `getNoteById return error`() {
-        var result: Throwable? = null
-        val testData = Exception()
-
-        viewModel.getErrorLiveData().observeForever {
-            result = it
+    fun `confirmDeleteById return success`() = runBlocking{
+        coEvery { mockInteractor.getNoteById(testNote.id) } returns testNote
+        val jobGet = launch(Dispatchers.IO) { viewModel.getNoteById(testNote.id) }
+        while (!jobGet.isCompleted){
+            delay(10)
         }
-        viewModel.getNoteById(testNote.id)
-        noteLiveData.value = NoteResult.Error(testData)
-
-        assertEquals(testData, result)
-    }
-
-    @Test
-    fun `deleteNoteById return success`() {
-        var result: Boolean? = null
-
-        viewModel.getSuccessDeleteLiveData().observeForever {
-            result = it
+        val jobDelete = launch(Dispatchers.IO) {viewModel.confirmedDelete(testNote.id)}
+        while (!jobDelete.isCompleted){
+            delay(10)
         }
-
-        viewModel.confirmedDelete(testNote.id)
-        noteLiveData.value = NoteResult.Success(null)
-
-        assertEquals(true, result)
+        coVerify(exactly = 1) { mockInteractor.deleteNoteById(testNote.id) }
     }
 
 
     @Test
-    fun `deleteNoteById return error`() {
-        var result: Throwable? = null
-        val testData = Exception()
+    fun `updateNote should save changes`() = runBlocking {
+        coEvery { mockInteractor.getNoteById(testNote.id) } returns testNote
+        coEvery { mockInteractor.saveNote(any()) } returns mockk()
 
-        viewModel.getErrorLiveData().observeForever {
-            result = it
+        val jobGet = launch(Dispatchers.IO) { viewModel.getNoteById(testNote.id) }
+        while (!jobGet.isCompleted){
+            delay(10)
         }
 
-        viewModel.confirmedDelete(testNote.id)
-        noteLiveData.value = NoteResult.Error(testData)
+        val jobSave = launch(Dispatchers.IO) { viewModel.updateNote() }
+        while (!jobSave.isCompleted){
+            delay(10)
+        }
 
-        assertEquals(testData, result)
-    }
-
-    @Test
-    fun `updateNote should save changes`() {
-        viewModel.getNoteById(testNote.id)
-        noteLiveData.value = NoteResult.Success(testNote)
-        viewModel.updateNote()
-        verify(exactly = 1) { mockInteractor.saveNote(testNote) }
+        coVerify(exactly = 1) { mockInteractor.saveNote(testNote) }
     }
 
 }

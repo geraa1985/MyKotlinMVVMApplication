@@ -1,6 +1,5 @@
 package com.example.mykotlinmvvmapplication.presentation.ui
 
-import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -14,6 +13,8 @@ import com.example.mykotlinmvvmapplication.presentation.adapters.NotesRVAdapter
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -22,14 +23,14 @@ import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 import org.koin.standalone.StandAloneContext
 
+@ExperimentalCoroutinesApi
 class MainActivityTest {
 
     @get:Rule
     val activityTestRule = IntentsTestRule(MainActivity::class.java, true, false)
 
-
     private val viewModel: MainViewModel = mockk(relaxed = true)
-    private val successLiveData = MutableLiveData<List<Note>?>()
+    private val successChannel = Channel<List<Note>?>(Channel.CONFLATED)
 
     private val testNotes = listOf(
             Note("1", "title1", "text1"),
@@ -46,9 +47,9 @@ class MainActivityTest {
                         }
                 )
         )
-        every { viewModel.getSuccessLiveData() } returns successLiveData
+        every { viewModel.getSuccessChannel() } returns successChannel
         activityTestRule.launchActivity(null)
-        successLiveData.postValue(testNotes)
+        successChannel.offer(testNotes)
     }
 
     @After

@@ -14,15 +14,22 @@ import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.presentation.adapters.NotesRVAdapter
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
 import org.koin.android.viewmodel.ext.android.viewModel
+import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity() {
+@ExperimentalCoroutinesApi
+class MainActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
             context.startActivity(this)
         }
     }
+
+    override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
+    private lateinit var jobGetNotes: Job
 
     private val viewModel: MainViewModel by viewModel()
 
@@ -34,16 +41,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         viewModel.apply {
-            getSuccessLiveData().observe(this@MainActivity, { value ->
-                value?.let {
-                    renderData(value)
-                } ?: return@observe
-            })
-            getErrorLiveData().observe(this@MainActivity, { error ->
-                error?.let {
-                    it.message?.let { errorText -> renderError(errorText) }
-                } ?: return@observe
-            })
             getClickOnFabLiveData().observe(this@MainActivity) {
                 it.let { NoteActivity.start(this@MainActivity) }
             }
@@ -65,6 +62,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        jobGetNotes = launch(Dispatchers.IO) {
+            viewModel.apply {
+                getSuccessChannel().consumeEach { notes ->
+                    notes?.let { renderData(it) }
+                }
+                getErrorChannel().consumeEach { error ->
+                    error.message?.let {
+                        renderError(it)
+                    }
+                }
+            }
+        }
+    }
+
     private fun renderData(value: List<Note>?) {
         value?.let { adapter.notes = value }
     }
@@ -81,5 +95,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.logout -> viewModel.clickOnLogout().let { true }
                 else -> false
             }
+
+    override fun onStop() {
+        jobGetNotes.cancel()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        cancel()
+        super.onDestroy()
+    }
 
 }
