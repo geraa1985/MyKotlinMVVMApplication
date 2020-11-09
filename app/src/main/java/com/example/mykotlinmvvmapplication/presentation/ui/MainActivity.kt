@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onStart() {
         super.onStart()
 
-        jobGetNotes = launch(Dispatchers.IO) {
+        jobGetNotes = launch {
             viewModel.apply {
                 getSuccessChannel().consumeEach { notes ->
                     notes?.let { renderData(it) }

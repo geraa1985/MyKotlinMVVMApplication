@@ -85,7 +85,7 @@ class NoteActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onStart() {
         super.onStart()
-        jobWithNote = launch(Dispatchers.IO) {
+        jobWithNote = launch {
             viewModel.apply {
                 getSuccessChannel().consumeEach {
                     renderData(it)

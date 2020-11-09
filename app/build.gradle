@@ -28,6 +28,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    configurations {
+        all {
+            resolutionStrategy {
+                exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
+            }
+        }
+    }
 }
 
 dependencies {
