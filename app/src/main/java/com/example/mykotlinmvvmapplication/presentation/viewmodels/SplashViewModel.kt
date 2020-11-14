@@ -1,32 +1,40 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.data.network.NoAuthExceptions
 import com.example.mykotlinmvvmapplication.domain.entities.User
 import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class SplashViewModel(private val interactor: INotesInteractor) : ViewModel() {
+class SplashViewModel(private val interactor: INotesInteractor) : ViewModel(), CoroutineScope {
 
-    private val successLiveData = MutableLiveData<Boolean?>()
-    private val errorLiveData = MutableLiveData<Throwable>()
+    private val successChannel = Channel<User?>()
+    private val errorChannel = Channel<Throwable>()
 
-    private val observer = {user: User? ->
-        successLiveData.value = user?.let { true }
-        errorLiveData.value = NoAuthExceptions()
-    }
+    override val coroutineContext: CoroutineContext by lazy { Dispatchers.Default + Job() }
+    private lateinit var jobGetUser: Job
 
-    fun getSuccessLiveData(): LiveData<Boolean?> = successLiveData
+    fun getSuccessChannel(): ReceiveChannel<User?> = successChannel
 
-    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
+    fun getErrorChannel(): ReceiveChannel<Throwable> = errorChannel
 
     fun requestUser() {
-        interactor.getUser().observeForever(observer)
+        jobGetUser = launch {
+            try {
+                successChannel.send(interactor.getUser())
+            } catch (e: Throwable) {
+                errorChannel.send(e)
+            }
+        }
     }
 
     override fun onCleared() {
-        interactor.getUser().removeObserver(observer)
+        jobGetUser.cancel()
         super.onCleared()
     }
 }

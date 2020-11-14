@@ -9,6 +9,7 @@ import com.example.mykotlinmvvmapplication.domain.usecases.NotesInteractor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 
@@ -20,6 +21,7 @@ val appModule = module {
     single { NotesInteractor(get())} bind INotesInteractor::class
 }
 
+@ExperimentalCoroutinesApi
 val mainModule = module {
     viewModel { MainViewModel(get()) }
 }

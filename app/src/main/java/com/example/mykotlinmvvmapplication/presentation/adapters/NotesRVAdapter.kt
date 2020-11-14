@@ -13,7 +13,9 @@ import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.MainViewModel
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_note.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class NotesRVAdapter(val viewModel: MainViewModel) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
 
     var notes: List<Note> = listOf()

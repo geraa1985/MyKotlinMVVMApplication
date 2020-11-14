@@ -8,9 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mykotlinmvvmapplication.R
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.SplashViewModel
 import com.firebase.ui.auth.AuthUI
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
 import org.koin.android.viewmodel.ext.android.viewModel
+import kotlin.coroutines.CoroutineContext
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         private const val RC_SIGN_IN = 777
@@ -20,21 +23,28 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
+
     private val viewModel: SplashViewModel by viewModel()
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         viewModel.apply {
-            getSuccessLiveData().observe(this@SplashActivity, { value ->
-                value ?: return@observe
-                renderData(value)
-            })
-            getErrorLiveData().observe(this@SplashActivity, { error ->
-                error?.let {
+            launch {
+                getSuccessChannel().consumeEach {
+                    it?.let {
+                        renderData(true)
+                    }
+                }
+            }
+            launch {
+                getErrorChannel().consumeEach {
                     startLoginActivity()
-                } ?: return@observe
-            })
+                }
+            }
+
         }
     }
 
@@ -43,6 +53,7 @@ class SplashActivity : AppCompatActivity() {
         viewModel.requestUser()
     }
 
+    @ExperimentalCoroutinesApi
     private fun renderData(value: Boolean?) {
         value?.takeIf { it }?.let {
             MainActivity.start(this)
@@ -68,6 +79,11 @@ class SplashActivity : AppCompatActivity() {
             finish()
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        cancel()
+        super.onDestroy()
     }
 
 }

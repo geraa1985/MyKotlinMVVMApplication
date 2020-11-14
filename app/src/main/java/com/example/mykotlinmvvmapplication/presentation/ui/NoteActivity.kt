@@ -17,11 +17,15 @@ import com.example.mykotlinmvvmapplication.presentation.extentions.getColor
 import com.example.mykotlinmvvmapplication.presentation.extentions.getColorInt
 import com.example.mykotlinmvvmapplication.presentation.viewmodels.NoteViewModel
 import kotlinx.android.synthetic.main.activity_note.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
-class NoteActivity : AppCompatActivity() {
+@ExperimentalCoroutinesApi
+class NoteActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         private const val EXTRA_NOTE_ID = "noteId"
@@ -32,6 +36,8 @@ class NoteActivity : AppCompatActivity() {
             context.startActivity(this)
         }
     }
+
+    override val coroutineContext: CoroutineContext by lazy { Dispatchers.Main + Job() }
 
     val viewModel: NoteViewModel by viewModel()
 
@@ -47,16 +53,6 @@ class NoteActivity : AppCompatActivity() {
         color = viewModel.setColor()
 
         viewModel.apply {
-            getSuccessLiveData().observe(this@NoteActivity, { value ->
-                value?.let {
-                    renderData(value)
-                } ?: return@observe
-            })
-            getErrorLiveData().observe(this@NoteActivity, { error ->
-                error?.let {
-                    it.message?.let { errorText -> renderError(errorText) }
-                } ?: return@observe
-            })
             getClickOnHomeLiveData().observe(this@NoteActivity) {
                 onBackPressed()
             }
@@ -67,9 +63,6 @@ class NoteActivity : AppCompatActivity() {
                         viewModel.confirmedDelete(noteId)
                     }
                 }
-            }
-            getSuccessDeleteLiveData().observe(this@NoteActivity) {
-                finish()
             }
             getClickOnColorLiveData().observe(this@NoteActivity) {
                 if (colorPicker.isOpen) {
@@ -86,6 +79,25 @@ class NoteActivity : AppCompatActivity() {
         } ?: run {
             setToolbar()
             initView()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        launch {
+            viewModel.getSuccessChannel().consumeEach {
+                renderData(it)
+            }
+        }
+        launch {
+            viewModel.getErrorChannel().consumeEach { error ->
+                error.message?.let { renderError(it) }
+            }
+        }
+        launch {
+            viewModel.getSuccessDeleteChannel().consumeEach {
+                finish()
+            }
         }
     }
 
@@ -147,6 +159,7 @@ class NoteActivity : AppCompatActivity() {
     override fun onDestroy() {
         note_title.removeTextChangedListener(textChangeListener)
         note_message.removeTextChangedListener(textChangeListener)
+        cancel()
         super.onDestroy()
     }
 

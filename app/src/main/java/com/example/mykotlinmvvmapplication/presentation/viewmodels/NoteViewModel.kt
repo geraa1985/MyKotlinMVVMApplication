@@ -1,26 +1,29 @@
 package com.example.mykotlinmvvmapplication.presentation.viewmodels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.example.mykotlinmvvmapplication.data.network.NoteResult
 import com.example.mykotlinmvvmapplication.domain.entities.Color
 import com.example.mykotlinmvvmapplication.domain.entities.Note
 import com.example.mykotlinmvvmapplication.domain.usecases.INotesInteractor
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
-class NoteViewModel(private val interactor: INotesInteractor) : ViewModel() {
+class NoteViewModel(private val interactor: INotesInteractor) : ViewModel(), CoroutineScope {
 
-    private var noteLiveData: LiveData<NoteResult>? = null
-    private var deleteLiveData: LiveData<NoteResult>? = null
+    override val coroutineContext: CoroutineContext by lazy { Dispatchers.Default + Job() }
 
-    private val successLiveData = MutableLiveData<Note?>()
-    private val errorLiveData = MutableLiveData<Throwable>()
+    private val successChannel = Channel<Note?>()
+    private val errorChannel = Channel<Throwable>()
+
     private val clickOnHomeLiveData = MutableLiveData<Boolean>()
     private val clickOnColorLiveData = MutableLiveData<Boolean>()
     private val clickOnDeleteLiveData = MutableLiveData<Boolean>()
-    private val successDeleteLiveData = MutableLiveData<Boolean>()
+    private val successDeleteChannel = Channel<Unit?>()
+
+    private var id: String? = null
 
     private var pendingNote: Note? = null
 
@@ -51,38 +54,29 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel() {
     }
 
     fun updateNote() {
-        pendingNote?.let {
-            interactor.saveNote(it)
-        }
-    }
-
-    private val noteObserver = Observer { result: NoteResult ->
-        when (result) {
-            is NoteResult.Success<*> -> {
-                successLiveData.value = result.data as Note?
-                pendingNote = successLiveData.value
+        launch {
+            pendingNote?.let {
+                interactor.saveNote(it)
             }
-            is NoteResult.Error -> errorLiveData.value = result.error
         }
     }
 
-    private val deleteObserver = Observer { result: NoteResult ->
-        when (result) {
-            is NoteResult.Success<*> -> successDeleteLiveData.value = true
-            is NoteResult.Error -> errorLiveData.value = result.error
-        }
-    }
+    fun getSuccessChannel(): ReceiveChannel<Note?> = successChannel
 
-    fun getSuccessLiveData(): LiveData<Note?> = successLiveData
-
-    fun getErrorLiveData(): LiveData<Throwable> = errorLiveData
-
-    private var id: String? = null
+    fun getErrorChannel(): ReceiveChannel<Throwable> = errorChannel
 
     fun getNoteById(id: String) {
         this.id = id
-        noteLiveData = interactor.getNoteById(id)
-        noteLiveData?.observeForever(noteObserver)
+        launch {
+            try {
+                interactor.getNoteById(id)?.let {
+                    pendingNote = it
+                    successChannel.send(it)
+                }
+            } catch (e: Throwable) {
+                errorChannel.send(e)
+            }
+        }
     }
 
     fun clickOnHome() {
@@ -105,16 +99,22 @@ class NoteViewModel(private val interactor: INotesInteractor) : ViewModel() {
 
     fun confirmedDelete(id: String?) {
         id?.let {
-            deleteLiveData = interactor.deleteNoteById(id)
-            deleteLiveData?.observeForever(deleteObserver)
+            launch {
+                try {
+                    pendingNote?.let { successDeleteChannel.send(interactor.deleteNoteById(id)) }
+                    pendingNote = null
+                } catch (e: Throwable){
+                    errorChannel.send(e)
+                }
+
+            }
         }
     }
 
-    fun getSuccessDeleteLiveData() = successDeleteLiveData
+    fun getSuccessDeleteChannel(): ReceiveChannel<Unit?> = successDeleteChannel
 
     override fun onCleared() {
-        noteLiveData?.removeObserver(noteObserver)
-        deleteLiveData?.removeObserver(deleteObserver)
+        cancel()
         super.onCleared()
     }
 }
