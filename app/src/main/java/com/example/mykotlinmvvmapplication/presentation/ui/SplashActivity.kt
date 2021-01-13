@@ -36,7 +36,7 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                 getSuccessChannel().consumeEach {
                     it?.let {
                         renderData(true)
-                    }
+                    } ?: startLoginActivity()
                 }
             }
             launch {
